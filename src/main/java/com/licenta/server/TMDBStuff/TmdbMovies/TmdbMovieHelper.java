@@ -1,31 +1,24 @@
-package com.licenta.server.TMDBStuff;
-
-import com.licenta.server.TMDBStuff.TmdbMovies.TmdbMovieDTO;
-import com.licenta.server.TMDBStuff.TmdbMovies.TmdbCardResults;
-import lombok.Data;
+package com.licenta.server.TMDBStuff.TmdbMovies;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.service.GenericResponseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import java.util.Map;
 
-@Data
+
 @RequiredArgsConstructor
 @Service
-public class TmdbHelper {
+public class TmdbMovieHelper {
     private final WebClient tmdbClient;
-    private final GenericResponseService responseBuilder;
 
-    public TmdbCardResults searchTmdbMovieByTitle(int page, String query) {
+    public TmdbMovieCardResults searchTmdbMovieByTitle(int page, String query) {
             return tmdbClient.get().uri(uriBuilder ->
                     uriBuilder.path("/search/movie")
                             .queryParam("language", "en-US")
                             .queryParam("query", query)
                             .queryParam("include_adult", true)
                             .queryParam("page", page)
-                            .build()).retrieve().bodyToMono(TmdbCardResults.class).block();
+                            .build()).retrieve().bodyToMono(TmdbMovieCardResults.class).block();
     }
     public ResponseEntity<TmdbMovieDTO> getTmdbMovieDetails(Integer tmdbId) {
         try {
@@ -40,24 +33,24 @@ public class TmdbHelper {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-    public TmdbCardResults getTmdbNowPlayingMovies(int page) {
+    public TmdbMovieCardResults getTmdbNowPlayingMovies(int page) {
         return tmdbClient.get().uri(uriBuilder ->
                 uriBuilder.path("/movie/now_playing")
                         .queryParam("language" , "en-US")
-                        .queryParam("page" , page).build()).retrieve().bodyToMono(TmdbCardResults.class).block();
+                        .queryParam("page" , page).build()).retrieve().bodyToMono(TmdbMovieCardResults.class).block();
     }
 
-    public TmdbCardResults getPopularMovies(int page) {
+    public TmdbMovieCardResults getPopularMovies(int page) {
         return tmdbClient.get().uri(uriBuilder ->
                 uriBuilder.path("/movie/popular")
                         .queryParam("language" , "en-US")
-                        .queryParam("page" , page).build()).retrieve().bodyToMono(TmdbCardResults.class).block();
+                        .queryParam("page" , page).build()).retrieve().bodyToMono(TmdbMovieCardResults.class).block();
     }
-    public TmdbCardResults getUpcomingMovies(int page) {
+    public TmdbMovieCardResults getUpcomingMovies(int page) {
         return tmdbClient.get().uri(uriBuilder ->
                 uriBuilder.path("/movie/upcoming")
                         .queryParam("language" , "en-US")
-                        .queryParam("page" , page).build()).retrieve().bodyToMono(TmdbCardResults.class).block();
+                        .queryParam("page" , page).build()).retrieve().bodyToMono(TmdbMovieCardResults.class).block();
     }
 
 }

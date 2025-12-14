@@ -1,23 +1,23 @@
 package com.licenta.server.dto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+
+import lombok.*;
 
 import java.util.List;
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MovieDTO {
-
-    private Integer tmdbId;
-    private String title;
+public class TvDTO {
+    private Integer tmdb_id;
+    private String name;
     private String overview;
-    private String releaseDate;
+    private String release_date;
     private List<Integer> genres;
-    private Double rating;
+    private Integer numberOfSeasons;
     private String posterPath;
     private String backdropPath;
     private Integer voteCount;
+    private Double voteAverage;
+    private String status;
 }

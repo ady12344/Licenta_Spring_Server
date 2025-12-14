@@ -1,4 +1,4 @@
-package com.licenta.server.TMDBStuff.TmdbMovies;
+package com.licenta.server.TMDBStuff;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
