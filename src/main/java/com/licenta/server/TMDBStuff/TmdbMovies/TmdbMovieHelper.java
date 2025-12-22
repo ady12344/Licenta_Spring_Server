@@ -21,6 +21,7 @@ public class TmdbMovieHelper {
                             .build()).retrieve().bodyToMono(TmdbMovieCardResults.class).block();
     }
     public ResponseEntity<TmdbMovieDTO> getTmdbMovieDetails(Integer tmdbId) {
+        //De modificat ca la TvHelper pentru get tv details si de mutat toate Response entity-urile in Controllere
         try {
             TmdbMovieDTO tmdbMovieDTO = tmdbClient.get().uri(uriBuilder ->
                             uriBuilder.path("/movie/" + tmdbId)

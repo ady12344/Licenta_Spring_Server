@@ -58,19 +58,18 @@ public class MovieService {
     public ResponseEntity<TmdbMovieCardResults> searchMovieByTitle(int page , String query) {
             return ResponseEntity.ok().body(tmdbHelper.searchTmdbMovieByTitle(page, query));
     }
-    @Cacheable(value = "nowPlayingMovies" , key = "#page")
     public ResponseEntity<TmdbMovieCardResults> getNowPlayingMovies(int page) {
         return ResponseEntity.ok().body(tmdbHelper.getTmdbNowPlayingMovies(page));
     }
 
-    @Cacheable(value = "popularMovies" , key = "#page")
+
     public ResponseEntity<TmdbMovieCardResults> getPopularMovies(int page) {
         return ResponseEntity.ok().body(tmdbHelper.getPopularMovies(page));
     }
     public ResponseEntity<TmdbMovieCardResults> getUpcomingMovies(int page) {
         return ResponseEntity.ok().body(tmdbHelper.getUpcomingMovies(page));
     }
-    @Cacheable(value = "movieById" , key = "#id")
+
     public ResponseEntity<MovieDTO> getMovieById(Integer id) {
        var movieInDB =  movieRepository.findByTmdbId(id);
         if(movieInDB.isPresent()) {

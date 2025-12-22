@@ -36,5 +36,5 @@ public class TmdbTvDTO {
     @JsonProperty("status")
     private String status;
     @JsonProperty("seasons")
-    private List<TvShowSeasonsCard> seasons;
+    private List<TvTmdbSeasonCard> seasons;
 }

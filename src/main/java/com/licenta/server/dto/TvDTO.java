@@ -12,7 +12,7 @@ public class TvDTO {
     private Integer tmdb_id;
     private String name;
     private String overview;
-    private String release_date;
+    private String releaseDate;
     private List<Integer> genres;
     private Integer numberOfSeasons;
     private String posterPath;
