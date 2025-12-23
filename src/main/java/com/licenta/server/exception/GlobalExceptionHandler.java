@@ -21,6 +21,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleGeneric(RuntimeException ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("External service error");
+                .body("External server error");
     }
 }

@@ -1,18 +1,16 @@
-package com.licenta.server.TMDBStuff.TmdbMovies;
+package com.licenta.server.TMDBStuff;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
-@Data
-public class TmdbMovieCardResults {
+@Getter
+public class TmdbPagedResponse<T>{
     @JsonProperty("page")
     private Integer page;
     @JsonProperty("results")
-    private List<TmdbLightSearchResult> results;
+    private List<T> results;
     @JsonProperty("total_pages")
     private Integer totalPages;
-
-
 }

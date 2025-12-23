@@ -1,14 +1,10 @@
-package com.licenta.server.TMDBStuff.TmdbTV;
+package com.licenta.server.TMDBStuff;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class TmdbTvCard {
+public class TmdbTvCardDto {
     @JsonProperty("id")
     private Integer tmdbTvId;
     @JsonProperty("name")

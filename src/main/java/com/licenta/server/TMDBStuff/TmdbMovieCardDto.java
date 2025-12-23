@@ -1,11 +1,10 @@
-package com.licenta.server.TMDBStuff.TmdbMovies;
+package com.licenta.server.TMDBStuff;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.Getter;
 
-//For card result search
-@Data
-public class TmdbLightSearchResult {
+@Getter
+public class TmdbMovieCardDto {
     @JsonProperty("id")
     private Integer tmdbId;
     @JsonProperty("title")

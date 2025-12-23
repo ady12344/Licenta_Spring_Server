@@ -11,7 +11,7 @@ public class TmdbConfiguration {
     @Value("${secret.TMDB.API.Key}")
     private String apiKey;
     @Bean
-    public WebClient tmdbClient() {
+    public WebClient webClient() {
         return WebClient.builder().baseUrl("https://api.themoviedb.org/3/")
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE , "application/json;charset=UTF-8").build();
