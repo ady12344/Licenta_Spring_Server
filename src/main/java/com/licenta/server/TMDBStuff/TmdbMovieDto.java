@@ -29,6 +29,6 @@ public class TmdbMovieDto {
     private Double voteAverage;
 
     private Double popularity;
-
+    private String status;
     private List<TmdbGenreDto> genres;
 }

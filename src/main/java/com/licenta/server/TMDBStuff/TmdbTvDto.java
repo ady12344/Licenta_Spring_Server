@@ -29,16 +29,8 @@ public class TmdbTvDto {
     @JsonProperty("number_of_seasons")
     private Integer numberOfSeasons;
 
-    @JsonProperty("number_of_episodes")
-    private Integer numberOfEpisodes;
-
     @JsonProperty("vote_average")
     private Double voteAverage;
-
-    @JsonProperty("vote_count")
-    private Integer voteCount;
-
-    private Double popularity;
 
     private String status;
 

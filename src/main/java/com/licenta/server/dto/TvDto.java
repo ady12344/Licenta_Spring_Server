@@ -1,6 +1,9 @@
 package com.licenta.server.dto;
 
-import com.licenta.server.models.MediaType;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.licenta.server.TMDBStuff.TmdbGenreDto;
+import com.licenta.server.TMDBStuff.TmdbSeasonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,17 +12,15 @@ import java.util.List;
 
 @Getter @Setter
 @Builder
-public class MovieDto {
+public class TvDto {
     private int tmdbId;
-    @Builder.Default
-    private MediaType mediaType = MediaType.MOVIE;
     private String title;
     private String overview;
     private String posterPath;
     private String backdropPath;
-    private String releaseDate;// string in API, LocalDate in DB if you want
-    private Double tmdbRating;
+    private String firstAirDate; // keep as String
     private String status;
-
+    private Integer numberOfSeasons;
+    private Double voteAverage;
     private List<String> genres;
 }

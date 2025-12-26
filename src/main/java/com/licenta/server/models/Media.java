@@ -32,13 +32,14 @@ public class Media {
     private String overview;
     private String posterPath;
     private String backdropPath;
+    private String status;
     private LocalDate releaseDate;    // movie
     private LocalDate firstAirDate;   // tv
+    private Integer numberOfSeasons; // tv
     @ElementCollection
     @CollectionTable(name = "media_genres", joinColumns = @JoinColumn(name = "media_id"))
     @Column(name = "genre")
     private List<String> genres;
     private Double voteAverage;
-    private Double popularity;
     private Instant lastSyncedAt;
 }

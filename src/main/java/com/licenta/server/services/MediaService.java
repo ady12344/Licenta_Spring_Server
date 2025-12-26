@@ -1,10 +1,9 @@
 package com.licenta.server.services;
 
 import com.licenta.server.TMDBStuff.*;
-import com.licenta.server.dto.MovieCardDto;
-import com.licenta.server.dto.MovieDto;
+import com.licenta.server.dto.*;
 
-import com.licenta.server.dto.PagedResponseDto;
+import com.licenta.server.mapper.MediaMapper;
 import com.licenta.server.models.Media;
 import com.licenta.server.models.MediaType;
 import com.licenta.server.repository.MediaRepository;
@@ -24,25 +23,10 @@ import java.util.List;
 public class MediaService {
     private final MediaRepository mediaRepository;
     private final TmdbClient tmdbClient;
-
+    private MediaMapper mapper;
     private boolean isStale(Media media) {
         return media.getLastSyncedAt() == null ||
                 media.getLastSyncedAt().isBefore(Instant.now().minus(Duration.ofDays(7)));
-    }
-
-    public Media mapToEntity(MovieDto dto){
-        return Media.builder()
-                .tmdbId(dto.getTmdbId())
-                .title(dto.getTitle())
-                .backdropPath(dto.getBackdropPath())
-                .genres(dto.getGenres())
-                .overview(dto.getOverview())
-                .voteAverage(dto.getTmdbRating())
-                .releaseDate(dto.getReleaseDate() == null ? null : LocalDate.parse(dto.getReleaseDate()))
-                .popularity(dto.getPopularity())
-                .posterPath(dto.getPosterPath())
-                .mediaType(dto.getMediaType())
-                .build();
     }
 
     private LocalDate parseDate(String s) {
@@ -50,40 +34,7 @@ public class MediaService {
         return LocalDate.parse(s); // TMDB gives yyyy-MM-dd
     }
 
-    public MovieDto mapMediaToMovieDto(Media media){
-        return MovieDto.builder()
-                .tmdbId(media.getTmdbId())
-                .title(media.getTitle())
-                .backdropPath(media.getBackdropPath())
-                .genres(media.getGenres())
-                .overview(media.getOverview())
-                .tmdbRating(media.getVoteAverage())
-                .releaseDate(media.getReleaseDate() == null ? null : media.getReleaseDate().toString())
-                .popularity(media.getPopularity())
-                .posterPath(media.getPosterPath())
-                .mediaType(MediaType.MOVIE)
-                .build();
-    }
-    public MovieDto mapTmdbToMovieDto(TmdbMovieDto dto){
-        return MovieDto.builder()
-                .tmdbId(dto.getId())
-                .title(dto.getTitle())
-                .backdropPath(dto.getBackdropPath())
-                .genres(dto.getGenres() == null ? List.of() : dto.getGenres().stream().map(TmdbGenreDto::getName).toList())
-                .overview(dto.getOverview())
-                .tmdbRating(dto.getVoteAverage())
-                .releaseDate(dto.getReleaseDate())
-                .popularity(dto.getPopularity())
-                .posterPath(dto.getPosterPath())
-                .mediaType(MediaType.MOVIE)
-                .build();
-    }
-    public MovieCardDto mapToMovieCard(TmdbMovieCardDto movieCardDto){
-        return MovieCardDto.builder()
-                .title(movieCardDto.getTitle())
-                .posterPath(movieCardDto.getPosterPath())
-                .tmdbId(movieCardDto.getTmdbId()).build();
-    }
+
     //=======//
     //Movies//
     //======//
@@ -94,7 +45,7 @@ public class MediaService {
     //Maybe i can refactor this to be centralized? Just one media and switch with case of media type of TV or Movie
     public MovieDto getMovieDetails(int id){
         return mediaRepository.findMediaByMediaTypeAndTmdbId(MediaType.MOVIE ,id)
-                .map(this::mapMediaToMovieDto).orElseGet(() -> mapTmdbToMovieDto(fetchMovieFromTmdb(id)));
+                .map(MediaMapper::mapMediaToMovieDto).orElseGet(() -> mapper.mapTmdbToMovieDto(fetchMovieFromTmdb(id)));
 
     }
     @Transactional
@@ -114,7 +65,6 @@ public class MediaService {
                 media.setOverview(dto.getOverview());
                 media.setPosterPath(dto.getPosterPath());
                 media.setBackdropPath(dto.getBackdropPath());
-                media.setPopularity(dto.getPopularity());
                 media.setVoteAverage(dto.getVoteAverage());
                 media.setReleaseDate(parseDate(dto.getReleaseDate()));
                 media.setFirstAirDate(null);
@@ -129,10 +79,11 @@ public class MediaService {
                 media.setOverview(dto.getOverview());
                 media.setPosterPath(dto.getPosterPath());
                 media.setBackdropPath(dto.getBackdropPath());
-                media.setPopularity(dto.getPopularity());
                 media.setVoteAverage(dto.getVoteAverage());
                 media.setFirstAirDate(parseDate(dto.getFirstAirDate()));
+                media.setStatus(dto.getStatus());
                 media.setReleaseDate(null);
+                media.setNumberOfSeasons(dto.getNumberOfSeasons());
 
                 media.setGenres(dto.getGenres() == null ? List.of()
                         : dto.getGenres().stream().map(TmdbGenreDto::getName).toList());
@@ -147,28 +98,59 @@ public class MediaService {
     public PagedResponseDto<MovieCardDto> searchMovieByTitle(int page , String query){
         TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.searchMovieByTitle(page , query);
         return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
-                tmdbRes.getResults().stream().map(this::mapToMovieCard).toList() ,
+                tmdbRes.getResults().stream().map(MediaMapper::mapToMovieCard).toList() ,
                 tmdbRes.getTotalPages());
     }
 
     public PagedResponseDto<MovieCardDto> getPopularMovies(int page){
         TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.getPopularMovies(page);
         return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
-                tmdbRes.getResults().stream().map(this::mapToMovieCard).toList() ,
+                tmdbRes.getResults().stream().map(MediaMapper::mapToMovieCard).toList() ,
                 tmdbRes.getTotalPages());
     }
     public PagedResponseDto<MovieCardDto> getNowPlayingMovies(int page){
         TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.getNowPlayingMovies(page);
         return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
-                tmdbRes.getResults().stream().map(this::mapToMovieCard).toList() ,
+                tmdbRes.getResults().stream().map(MediaMapper::mapToMovieCard).toList() ,
                 tmdbRes.getTotalPages());
     }
     public PagedResponseDto<MovieCardDto> getUpcomingMovies(int page){
         TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.getUpcomingMovies(page);
         return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
-                tmdbRes.getResults().stream().map(this::mapToMovieCard).toList() ,
+                tmdbRes.getResults().stream().map(MediaMapper::mapToMovieCard).toList() ,
                 tmdbRes.getTotalPages());
     }
+    //============//
+    //==TV SHOWS==//
+    //============//
+    public TmdbTvDto fetchTvShowTmdb(int id){return tmdbClient.getTvShowDetails(id);}
 
-
+    public TvDto getTvDetails(int id){
+        return mediaRepository.findMediaByMediaTypeAndTmdbId(MediaType.TV , id)
+                .map(MediaMapper::mapMediaToTvDto).orElseGet(() -> mapper.mapTmdbToTvDto(fetchTvShowTmdb(id)));
+    }
+    public PagedResponseDto<TvCardDto> searchTvShowByTitle(String query, int page ){
+        TmdbPagedResponse<TmdbTvCardDto> tmdbRes = tmdbClient.searchTvByTitle(query, page);
+        return new PagedResponseDto<TvCardDto>(tmdbRes.getPage(),
+                tmdbRes.getResults().stream().map(MediaMapper::mapTmdbToTvCard).toList(),
+                tmdbRes.getTotalPages());
+    }
+    public PagedResponseDto<TvCardDto> getPopularTvShows(int page ){
+        TmdbPagedResponse<TmdbTvCardDto> tmdbRes = tmdbClient.popularTvShows(page);
+        return new PagedResponseDto<TvCardDto>(tmdbRes.getPage(),
+                tmdbRes.getResults().stream().map(MediaMapper::mapTmdbToTvCard).toList(),
+                tmdbRes.getTotalPages());
+    }
+    public PagedResponseDto<TvCardDto> getTopRatedTvShows(int page ){
+        TmdbPagedResponse<TmdbTvCardDto> tmdbRes = tmdbClient.topRatedTvShow(page);
+        return new PagedResponseDto<TvCardDto>(tmdbRes.getPage(),
+                tmdbRes.getResults().stream().map(MediaMapper::mapTmdbToTvCard).toList(),
+                tmdbRes.getTotalPages());
+    }
+    public PagedResponseDto<TvCardDto> onTheAirTvShows(int page ){
+        TmdbPagedResponse<TmdbTvCardDto> tmdbRes = tmdbClient.onTheAir(page);
+        return new PagedResponseDto<TvCardDto>(tmdbRes.getPage(),
+                tmdbRes.getResults().stream().map(MediaMapper::mapTmdbToTvCard).toList(),
+                tmdbRes.getTotalPages());
+    }
 }
