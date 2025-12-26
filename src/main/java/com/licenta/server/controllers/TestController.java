@@ -1,6 +1,10 @@
 package com.licenta.server.controllers;
 
 import com.licenta.server.TMDBStuff.TmdbClient;
+import com.licenta.server.dto.MovieCardDto;
+import com.licenta.server.dto.MovieDto;
+import com.licenta.server.dto.PagedResponseDto;
+import com.licenta.server.models.Media;
 import com.licenta.server.models.MediaType;
 import com.licenta.server.services.MediaService;
 import jakarta.persistence.Enumerated;
@@ -15,25 +19,49 @@ public class TestController {
     private final TmdbClient tmdbClient;
     private final MediaService mediaService;
 
+    // GET /api/test/movies/{tmdbId}
+    @GetMapping("/{tmdbId}")
+    public ResponseEntity<MovieDto> getMovieDetails(@PathVariable int tmdbId) {
+        return ResponseEntity.ok(mediaService.getMovieDetails(tmdbId));
+    }
+
+    // POST /api/test/movies/{tmdbId}/sync
+    @PostMapping("/{tmdbId}/sync")
+    public Media syncMovie(@PathVariable int tmdbId) {
+        return mediaService.upsertAndSyncMedia(MediaType.MOVIE, tmdbId);
+    }
+
+    // GET /api/test/movies/search?page=1&query=batman
     @GetMapping("/search")
-    public Object test(@RequestParam String q) {
-        return tmdbClient.searchTvByTitle(q, 1);
+    public ResponseEntity<PagedResponseDto<MovieCardDto>> search(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam String query
+    ) {
+        return ResponseEntity.ok(mediaService.searchMovieByTitle(page, query));
     }
-    @GetMapping("/getDetails")
-    public Object details(@RequestParam int q) {
-        return tmdbClient.getTvShowDetails(q);
-    }
+
+    // GET /api/test/movies/popular?page=1
     @GetMapping("/popular")
-    public Object popular(@RequestParam int q) {
-        return tmdbClient.popularTvShows(q);
+    public ResponseEntity<PagedResponseDto<MovieCardDto>> popular(
+            @RequestParam(defaultValue = "1") int page
+    ) {
+        return ResponseEntity.ok(mediaService.getPopularMovies(page));
     }
-    @GetMapping("/playingnow")
-    public Object toprated(@RequestParam int q) {
-        return tmdbClient.topRatedTvShow(q);
+
+    // GET /api/test/movies/now-playing?page=1
+    @GetMapping("/now-playing")
+    public ResponseEntity<PagedResponseDto<MovieCardDto>> nowPlaying(
+            @RequestParam(defaultValue = "1") int page
+    ) {
+        return ResponseEntity.ok(mediaService.getNowPlayingMovies(page));
     }
+
+    // GET /api/test/movies/upcoming?page=1
     @GetMapping("/upcoming")
-    public Object ontheair(@RequestParam int q) {
-        return tmdbClient.onTheAir(q);
+    public ResponseEntity<PagedResponseDto<MovieCardDto>> upcoming(
+            @RequestParam(defaultValue = "1") int page
+    ) {
+        return ResponseEntity.ok(mediaService.getUpcomingMovies(page));
     }
 
     @PostMapping("/add")

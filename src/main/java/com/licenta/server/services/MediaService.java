@@ -1,11 +1,10 @@
 package com.licenta.server.services;
 
-import com.licenta.server.TMDBStuff.TmdbClient;
-import com.licenta.server.TMDBStuff.TmdbGenreDto;
-import com.licenta.server.TMDBStuff.TmdbMovieDto;
-import com.licenta.server.TMDBStuff.TmdbTvDto;
+import com.licenta.server.TMDBStuff.*;
+import com.licenta.server.dto.MovieCardDto;
 import com.licenta.server.dto.MovieDto;
 
+import com.licenta.server.dto.PagedResponseDto;
 import com.licenta.server.models.Media;
 import com.licenta.server.models.MediaType;
 import com.licenta.server.repository.MediaRepository;
@@ -79,43 +78,97 @@ public class MediaService {
                 .mediaType(MediaType.MOVIE)
                 .build();
     }
+    public MovieCardDto mapToMovieCard(TmdbMovieCardDto movieCardDto){
+        return MovieCardDto.builder()
+                .title(movieCardDto.getTitle())
+                .posterPath(movieCardDto.getPosterPath())
+                .tmdbId(movieCardDto.getTmdbId()).build();
+    }
     //=======//
     //Movies//
     //======//
     public TmdbMovieDto fetchMovieFromTmdb(int id){
         return tmdbClient.getMovieDetails(id);
     }
+
+    //Maybe i can refactor this to be centralized? Just one media and switch with case of media type of TV or Movie
     public MovieDto getMovieDetails(int id){
         return mediaRepository.findMediaByMediaTypeAndTmdbId(MediaType.MOVIE ,id)
                 .map(this::mapMediaToMovieDto).orElseGet(() -> mapTmdbToMovieDto(fetchMovieFromTmdb(id)));
 
     }
-
     @Transactional
     public Media upsertAndSyncMedia(MediaType type, int tmdbId) {
 
         Media media = mediaRepository.findMediaByMediaTypeAndTmdbId(type, tmdbId)
                 .orElseGet(Media::new);
 
-
+        media.setMediaType(type);
+        media.setTmdbId(tmdbId);
 
         switch (type) {
             case MOVIE -> {
                 TmdbMovieDto dto = tmdbClient.getMovieDetails(tmdbId);
-                Media m = mapToEntity(mapTmdbToMovieDto(dto));
-                media = m;
+
+                media.setTitle(dto.getTitle());
+                media.setOverview(dto.getOverview());
+                media.setPosterPath(dto.getPosterPath());
+                media.setBackdropPath(dto.getBackdropPath());
+                media.setPopularity(dto.getPopularity());
+                media.setVoteAverage(dto.getVoteAverage());
+                media.setReleaseDate(parseDate(dto.getReleaseDate()));
+                media.setFirstAirDate(null);
+
+                media.setGenres(dto.getGenres() == null ? List.of()
+                        : dto.getGenres().stream().map(TmdbGenreDto::getName).toList());
             }
-          /*  case TV -> {
+            case TV -> {
                 TmdbTvDto dto = tmdbClient.getTvShowDetails(tmdbId);
-                mapTv(media, dto);
-            }*/
-            default -> {
-                return null;
+
+                media.setTitle(dto.getName());
+                media.setOverview(dto.getOverview());
+                media.setPosterPath(dto.getPosterPath());
+                media.setBackdropPath(dto.getBackdropPath());
+                media.setPopularity(dto.getPopularity());
+                media.setVoteAverage(dto.getVoteAverage());
+                media.setFirstAirDate(parseDate(dto.getFirstAirDate()));
+                media.setReleaseDate(null);
+
+                media.setGenres(dto.getGenres() == null ? List.of()
+                        : dto.getGenres().stream().map(TmdbGenreDto::getName).toList());
             }
+            default -> throw new IllegalArgumentException("Unsupported media type: " + type);
         }
 
         media.setLastSyncedAt(Instant.now());
         return mediaRepository.save(media);
     }
+
+    public PagedResponseDto<MovieCardDto> searchMovieByTitle(int page , String query){
+        TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.searchMovieByTitle(page , query);
+        return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
+                tmdbRes.getResults().stream().map(this::mapToMovieCard).toList() ,
+                tmdbRes.getTotalPages());
+    }
+
+    public PagedResponseDto<MovieCardDto> getPopularMovies(int page){
+        TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.getPopularMovies(page);
+        return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
+                tmdbRes.getResults().stream().map(this::mapToMovieCard).toList() ,
+                tmdbRes.getTotalPages());
+    }
+    public PagedResponseDto<MovieCardDto> getNowPlayingMovies(int page){
+        TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.getNowPlayingMovies(page);
+        return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
+                tmdbRes.getResults().stream().map(this::mapToMovieCard).toList() ,
+                tmdbRes.getTotalPages());
+    }
+    public PagedResponseDto<MovieCardDto> getUpcomingMovies(int page){
+        TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.getUpcomingMovies(page);
+        return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
+                tmdbRes.getResults().stream().map(this::mapToMovieCard).toList() ,
+                tmdbRes.getTotalPages());
+    }
+
 
 }

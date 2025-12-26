@@ -23,4 +23,8 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("External server error");
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleArgument(IllegalArgumentException arg){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Argument not accepted!");
+    }
 }
