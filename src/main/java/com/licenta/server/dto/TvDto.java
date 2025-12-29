@@ -3,7 +3,6 @@ package com.licenta.server.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.licenta.server.TMDBStuff.TmdbGenreDto;
-import com.licenta.server.TMDBStuff.TmdbSeasonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

@@ -36,5 +36,5 @@ public class TmdbTvDto {
 
     private List<TmdbGenreDto> genres;
 
-    private List<TmdbSeasonDto> seasons;
+    private List<TmdbSeasonCardDto> seasons;
 }

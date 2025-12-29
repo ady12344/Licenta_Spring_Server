@@ -80,6 +80,7 @@ public class TmdbClient {
     public TmdbPagedResponse<TmdbTvCardDto> searchTvByTitle(String query , int page){
         return webClient.get().uri(uriBuilder ->
                 uriBuilder.path("/search/tv")
+                        .queryParam("language" , "en-US")
                         .queryParam("query" , query)
                         .queryParam("page" , page)
                         .build()).retrieve().bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbTvCardDto>>() {}).block();
@@ -88,17 +89,41 @@ public class TmdbClient {
     public TmdbPagedResponse<TmdbTvCardDto> popularTvShows(int page){
         return webClient.get().uri(uriBuilder ->
                 uriBuilder.path("/tv/popular")
+                        .queryParam("language" , "en-US")
                         .queryParam("page", page).build()).retrieve().bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbTvCardDto>>() {}).block();
     }
     public TmdbPagedResponse<TmdbTvCardDto> topRatedTvShow(int page){
         return webClient.get().uri(uriBuilder ->
                 uriBuilder.path("/tv/top_rated")
+                        .queryParam("language" , "en-US")
                         .queryParam("page", page).build()).retrieve().bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbTvCardDto>>() {}).block();
     }
     public TmdbPagedResponse<TmdbTvCardDto> onTheAir(int page){
         return webClient.get().uri(uriBuilder ->
                 uriBuilder.path("/tv/on_the_air")
+                        .queryParam("language" , "en-US")
                         .queryParam("page", page).build()).retrieve().bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbTvCardDto>>() {}).block();
+    }
+
+    //===========//
+    //==Seasons==//
+    //===========//
+    public TmdbSeasonDto getSeasonDetails(int seriesId , int seasonNumber){
+        return webClient.get().uri(uriBuilder ->
+                uriBuilder.path("/tv/" + seriesId + "/season/" + seasonNumber)
+                        .queryParam("language" , "en-US")
+                        .queryParam("series_id" , seriesId)
+                        .queryParam("season_number" , seasonNumber).build()).retrieve()
+                .onStatus(status -> status == HttpStatus.NOT_FOUND , response -> Mono.error(new TmdbNotFoundException("Season not found!")))
+                .onStatus(
+                        HttpStatusCode::is4xxClientError,
+                        response -> Mono.error(
+                                new RuntimeException("TMDB client error"))
+                )
+                .onStatus(
+                        HttpStatusCode::is5xxServerError,
+                        response -> Mono.error(new RuntimeException("Tmdb Server Error!"))
+                ).bodyToMono(TmdbSeasonDto.class).block();
     }
 
 

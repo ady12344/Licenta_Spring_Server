@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleGeneric(RuntimeException ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("External server error");
+                .body(ex.getMessage());
     }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleArgument(IllegalArgumentException arg){

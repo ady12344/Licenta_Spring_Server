@@ -2,12 +2,15 @@ package com.licenta.server.controllers;
 
 import com.licenta.server.TMDBStuff.TmdbTvDto;
 import com.licenta.server.dto.PagedResponseDto;
+import com.licenta.server.dto.SeasonCardDto;
 import com.licenta.server.dto.TvCardDto;
 import com.licenta.server.dto.TvDto;
 import com.licenta.server.services.MediaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -63,5 +66,9 @@ public class TvTestControllers {
             @RequestParam(defaultValue = "1") int page
     ) {
         return ResponseEntity.ok(tvService.onTheAirTvShows(page));
+    }
+    @GetMapping("/getSeasons")
+    public ResponseEntity<List<SeasonCardDto>> getSeasonsForTvShow(@RequestParam int seriesId){
+        return ResponseEntity.ok(tvService.getTvShowSeasons(seriesId));
     }
 }

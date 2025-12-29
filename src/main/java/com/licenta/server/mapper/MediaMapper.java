@@ -1,14 +1,8 @@
 package com.licenta.server.mapper;
 
 import com.licenta.server.TMDBStuff.*;
-import com.licenta.server.dto.MovieCardDto;
-import com.licenta.server.dto.MovieDto;
-import com.licenta.server.dto.TvCardDto;
-import com.licenta.server.dto.TvDto;
+import com.licenta.server.dto.*;
 import com.licenta.server.models.Media;
-import com.licenta.server.models.MediaType;
-
-import java.time.LocalDate;
 import java.util.List;
 
 public class MediaMapper {
@@ -80,6 +74,14 @@ public class MediaMapper {
         return TvCardDto.builder()
                 .tmdbTvId(dto.getTmdbTvId())
                 .title(dto.getName())
+                .posterPath(dto.getPosterPath())
+                .build();
+    }
+
+    public static SeasonCardDto mapTmdbSeasonCardToSeasonCardDto(TmdbSeasonCardDto dto){
+        return SeasonCardDto.builder()
+                .name(dto.getName())
+                .seasonNumber(dto.getSeasonNumber())
                 .posterPath(dto.getPosterPath())
                 .build();
     }

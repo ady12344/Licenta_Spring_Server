@@ -1,21 +1,25 @@
 package com.licenta.server.TMDBStuff;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import lombok.Getter;
+
+import java.time.Instant;
+import java.time.LocalDate;
 
 @Getter
 public class TmdbSeasonDto {
-
     @JsonProperty("season_number")
     private int seasonNumber;
-    @JsonProperty("name")
-    private String name;
-    @JsonProperty("overview")
-    private String overview;
     @JsonProperty("episode_count")
     private int episodeCount;
-    @JsonProperty("air_date")
-    private String airDate;
+    private String name;
+    private String overview;
     @JsonProperty("poster_path")
     private String posterPath;
+    @JsonProperty("air_date")
+    private LocalDate airDate;
+    @JsonProperty("vote_average")
+    private Double voteAverage;
+
 }
