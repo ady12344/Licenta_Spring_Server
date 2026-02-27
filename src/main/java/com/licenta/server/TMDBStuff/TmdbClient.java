@@ -79,6 +79,7 @@ public class TmdbClient {
         return webClient.get().uri(uriBuilder ->
                         uriBuilder.path("/tv/" + id)
                                 .queryParam("language" , "en-US")
+                                .queryParam("append_to_response", "aggregate_credits")
                                 .build()).retrieve()
                 .onStatus(status -> status == HttpStatus.NOT_FOUND, response -> Mono.error(new TmdbNotFoundException("TV show not found in TMDB")))
                 .onStatus( HttpStatusCode::is4xxClientError,

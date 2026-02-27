@@ -68,8 +68,5 @@ public class TvTestControllers {
     ) {
         return ResponseEntity.ok(tvService.onTheAirTvShows(page));
     }
-    @GetMapping("/getSeasons")
-    public ResponseEntity<List<SeasonCardDto>> getSeasonsForTvShow(@RequestParam int seriesId){
-        return ResponseEntity.ok(tvService.getTvShowSeasons(seriesId));
-    }
+
 }

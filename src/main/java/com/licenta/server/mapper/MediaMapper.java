@@ -92,6 +92,10 @@ public class MediaMapper {
     }
 
     public static TvDto mapTmdbToTvDto(TmdbTvDto dto){
+        List<TvCastDTO> topCast = dto.getCredits().getCast().stream()
+                .limit(10)
+                .toList();
+
         return TvDto.builder()
                 .tmdbId(dto.getId())
                 .title(dto.getName())
@@ -102,6 +106,13 @@ public class MediaMapper {
                 .numberOfSeasons(dto.getNumberOfSeasons())
                 .genres(dto.getGenres().stream().map(TmdbGenreDto::getName).toList())
                 .backdropPath(dto.getBackdropPath())
+                .directorName(dto.getCredits().getCrew().stream()
+                        .filter(crew -> crew.getJobs().stream()
+                                .anyMatch(job -> "Director".equals(job.getJob()))) // Verificăm dacă are job-ul de "Director"
+                        .findFirst() // Îl luăm pe primul găsit
+                        .map(TvCrewDTO::getName) // Extragem doar numele
+                        .orElse("Unknown Director")) // Fallback dacă nu găsim nimic
+                .topCast(topCast)
                 .posterPath(dto.getPosterPath())
                 .build();
     }

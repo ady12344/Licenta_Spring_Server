@@ -35,6 +35,6 @@ public class TmdbTvDto {
     private String status;
 
     private List<TmdbGenreDto> genres;
-
-    private List<TmdbSeasonCardDto> seasons;
+    @JsonProperty("aggregate_credits")
+    private TvCreditsDTO credits;
 }

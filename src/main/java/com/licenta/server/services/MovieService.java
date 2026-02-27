@@ -5,14 +5,8 @@ import com.licenta.server.dto.MovieCardDto;
 import com.licenta.server.dto.MovieDto;
 import com.licenta.server.dto.PagedResponseDto;
 import com.licenta.server.mapper.MediaMapper;
-import com.licenta.server.models.Media;
-import com.licenta.server.models.MediaType;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,7 +74,7 @@ public class MovieService {
         // 5. Tăiem felia corespunzătoare paginii
         List<CastDTO> pagedResults = fullCast.subList(start, end);
 
-        // 6. Returnăm obiectul tău PagedResponseDto
+        // 6. Returnăm obiectul  PagedResponseDto
         return PagedResponseDto.<CastDTO>builder()
                 .page(page)
                 .results(pagedResults)

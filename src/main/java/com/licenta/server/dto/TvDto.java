@@ -3,6 +3,8 @@ package com.licenta.server.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.licenta.server.TMDBStuff.TmdbGenreDto;
+import com.licenta.server.TMDBStuff.TvCastDTO;
+import com.licenta.server.TMDBStuff.TvCrewDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,4 +24,6 @@ public class TvDto {
     private Integer numberOfSeasons;
     private Double voteAverage;
     private List<String> genres;
+    private String directorName;
+    private List<TvCastDTO> topCast;
 }

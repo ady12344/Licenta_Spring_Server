@@ -154,7 +154,4 @@ public class MediaService {
                 tmdbRes.getTotalPages());
     }
 
-    public List<SeasonCardDto> getTvShowSeasons(int seriesId){
-        return fetchTvShowTmdb(seriesId).getSeasons().stream().map(MediaMapper::mapTmdbSeasonCardToSeasonCardDto).toList();
-    }
 }
