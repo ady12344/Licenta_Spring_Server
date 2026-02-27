@@ -1,34 +1,36 @@
 package com.licenta.server.controllers;
 
+import com.licenta.server.TMDBStuff.CastDTO;
 import com.licenta.server.TMDBStuff.TmdbClient;
+import com.licenta.server.TMDBStuff.TmdbMovieDto;
 import com.licenta.server.dto.MovieCardDto;
 import com.licenta.server.dto.MovieDto;
 import com.licenta.server.dto.PagedResponseDto;
-import com.licenta.server.models.Media;
-import com.licenta.server.models.MediaType;
-import com.licenta.server.services.MediaService;
-import jakarta.persistence.Enumerated;
+import com.licenta.server.services.MovieService;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-public class TestController {
+public class MovieTestController {
     private final TmdbClient tmdbClient;
-    private final MediaService mediaService;
+    private final MovieService mediaService;
 
+    @GetMapping("/getCast")
+    public ResponseEntity<PagedResponseDto<CastDTO>> getMovieCastAndCrew(@RequestParam int id,
+                                                                         @RequestParam(defaultValue = "0") int page,
+                                                                         @RequestParam(defaultValue = "15") int size){
+
+        PagedResponseDto<CastDTO> response = mediaService.getMovieCastPaged(id, page, size);
+
+        return ResponseEntity.ok(response);
+
+    }
     // GET /api/test/movies/{tmdbId}
     @GetMapping("/{tmdbId}")
     public ResponseEntity<MovieDto> getMovieDetails(@PathVariable int tmdbId) {
         return ResponseEntity.ok(mediaService.getMovieDetails(tmdbId));
-    }
-
-    // POST /api/test/movies/{tmdbId}/sync
-    @PostMapping("/{tmdbId}/sync")
-    public Media syncMovie(@PathVariable int tmdbId) {
-        return mediaService.upsertAndSyncMedia(MediaType.MOVIE, tmdbId);
     }
 
     // GET /api/test/movies/search?page=1&query=batman
@@ -64,9 +66,9 @@ public class TestController {
         return ResponseEntity.ok(mediaService.getUpcomingMovies(page));
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestParam String mediaType , int id ){
-        mediaService.upsertAndSyncMedia(MediaType.valueOf(mediaType.toUpperCase()) , id);
-        return ResponseEntity.ok().build();
+    @GetMapping("/testTMDBMovie")
+    public ResponseEntity<TmdbMovieDto> testTMDBMovie(@RequestParam  int id){
+        return ResponseEntity.ok(mediaService.test(id));
     }
+
 }

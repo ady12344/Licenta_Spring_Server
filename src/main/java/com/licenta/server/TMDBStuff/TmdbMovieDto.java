@@ -31,4 +31,6 @@ public class TmdbMovieDto {
     private Double popularity;
     private String status;
     private List<TmdbGenreDto> genres;
+    private CreditsDTO credits;
+
 }

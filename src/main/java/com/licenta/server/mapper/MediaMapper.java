@@ -4,6 +4,7 @@ import com.licenta.server.TMDBStuff.*;
 import com.licenta.server.dto.*;
 import com.licenta.server.models.Media;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MediaMapper {
     //Movies
@@ -39,6 +40,40 @@ public class MediaMapper {
                 .posterPath(movieCardDto.getPosterPath())
                 .tmdbId(movieCardDto.getTmdbId()).build();
     }
+
+
+
+    public static MovieDto newMapToMovieDto(TmdbMovieDto apiResponse) {
+        // 2. Extragere Top Cast (primii 10)
+        List<CastDTO> topCast = apiResponse.getCredits().getCast().stream()
+                .limit(10)
+                .collect(Collectors.toList());
+
+        // 3. Extragere Genuri (numele lor sub formă de String)
+        List<String> genreNames = apiResponse.getGenres().stream()
+                .map(TmdbGenreDto::getName)
+                .collect(Collectors.toList());
+
+        // 4. Construcția obiectului final
+        return MovieDto.builder()
+                .tmdbId(apiResponse.getId())
+                .title(apiResponse.getTitle())
+                .overview(apiResponse.getOverview())
+                .posterPath(apiResponse.getPosterPath())
+                .backdropPath(apiResponse.getBackdropPath())
+                .releaseDate(apiResponse.getReleaseDate())
+                .tmdbRating(apiResponse.getVoteAverage())
+                .status(apiResponse.getStatus())
+                .directorName(apiResponse.getCredits().getCrew().stream()
+                        .filter(crew -> "Director".equals(crew.getJob()))
+                        .map(CrewDTO::getName) // Extragem doar String-ul cu numele
+                        .findFirst()           // Îl luăm pe primul
+                        .orElse("Unknown"))    // Fallback dacă nu există regizor în listă
+                .topCast(topCast)
+                .genres(genreNames)
+                .build();
+    }
+
 
     //Tv Shows
     public static TvDto mapMediaToTvDto(Media media){

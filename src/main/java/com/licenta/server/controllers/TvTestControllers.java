@@ -6,6 +6,7 @@ import com.licenta.server.dto.SeasonCardDto;
 import com.licenta.server.dto.TvCardDto;
 import com.licenta.server.dto.TvDto;
 import com.licenta.server.services.MediaService;
+import com.licenta.server.services.TelevisionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/tv")
 public class TvTestControllers {
-    private final MediaService tvService;
+    private final TelevisionService tvService;
     // TMDB raw details (if you want to expose it)
     // GET /tv/tmdb/{id}
     @GetMapping("/tmdb/{id}")

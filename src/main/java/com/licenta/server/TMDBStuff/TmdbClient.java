@@ -2,6 +2,7 @@ package com.licenta.server.TMDBStuff;
 
 import com.licenta.server.exception.TmdbNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,13 +21,27 @@ public class TmdbClient {
         return webClient.get().uri(uriBuilder ->
                             uriBuilder.path("/movie/" + id)
                                     .queryParam("language", "en-US")
+                                    .queryParam("append_to_response", "credits")
                                     .build())
                     .retrieve()
-                .onStatus(status -> status == HttpStatus.NOT_FOUND, response -> Mono.error(new TmdbNotFoundException("TV show not found in TMDB")))
+                .onStatus(status -> status == HttpStatus.NOT_FOUND, response -> Mono.error(new TmdbNotFoundException("Movie show not found in TMDB")))
                 .onStatus(HttpStatusCode::is4xxClientError , response ->
                         Mono.error(new RuntimeException("Tmdb Client Error")))
                 .onStatus(HttpStatusCode::is5xxServerError , response -> Mono.error(new RuntimeException("Tmdb Server Error")))
                 .bodyToMono(TmdbMovieDto.class).block();
+    }
+    @Cacheable(value = "cast" , key = "#id")
+    public CreditsDTO getMovieCastAndCrew(int id){
+        return webClient.get().uri(uriBuilder ->
+                        uriBuilder.path("/movie/" + id + "/credits")
+                                .queryParam("language", "en-US")
+                                .build())
+                .retrieve()
+                .onStatus(status -> status == HttpStatus.NOT_FOUND, response -> Mono.error(new TmdbNotFoundException("Movie show not found in TMDB")))
+                .onStatus(HttpStatusCode::is4xxClientError , response ->
+                        Mono.error(new RuntimeException("Tmdb Client Error")))
+                .onStatus(HttpStatusCode::is5xxServerError , response -> Mono.error(new RuntimeException("Tmdb Server Error")))
+                .bodyToMono(CreditsDTO.class).block();
     }
     public TmdbPagedResponse<TmdbMovieCardDto> searchMovieByTitle(int page, String query) {
         return webClient.get().uri(uriBuilder ->

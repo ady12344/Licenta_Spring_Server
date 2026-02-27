@@ -10,6 +10,4 @@ public class TvCardDto {
     private int tmdbTvId;
     private String title;
     private String posterPath;
-    @Builder.Default
-    private MediaType mediaType = MediaType.TV;
 }
