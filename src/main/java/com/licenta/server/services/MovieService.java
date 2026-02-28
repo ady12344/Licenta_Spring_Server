@@ -1,9 +1,7 @@
 package com.licenta.server.services;
 
 import com.licenta.server.TMDBStuff.*;
-import com.licenta.server.dto.MovieCardDto;
-import com.licenta.server.dto.MovieDto;
-import com.licenta.server.dto.PagedResponseDto;
+import com.licenta.server.dto.*;
 import com.licenta.server.mapper.MediaMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,15 +45,15 @@ public class MovieService {
         return mapToPagedResponse(tmdbClient.getUpcomingMovies(page));
     }
     //@Cacheable(value = "cast" , key = "#id")
-    public CreditsDTO getMovieCastAndCrew(int id){
+    public CreditsDTO<CastDTO, CrewDTO> getMovieCastAndCrew(int id){
         //System.out.println("DEBUG: Se face apel real la TMDB pentru ID: " + id);
         return tmdbClient.getMovieCastAndCrew(id);
     }
 
     //test zone
-    public PagedResponseDto<CastDTO> getMovieCastPaged(int id, int page, int size) {
+    /*public PagedResponseDto<CastDTO> getMovieCastPaged(int id, int page, int size) {
         // 1. Obținem toate datele de la TMDB (metoda ta care folosește WebClient)
-        CreditsDTO allCredits = getMovieCastAndCrew(id);
+        CreditsDTO<CastDTO , CrewDTO> allCredits = getMovieCastAndCrew(id);
 
         // 2. Extragem lista de cast și o sortăm după importanță (order)
         List<CastDTO> fullCast = allCredits.getCast().stream()
@@ -80,8 +78,38 @@ public class MovieService {
                 .results(pagedResults)
                 .totalPages(totalPages)
                 .build();
-    }
+    }*/
+    public PagedResponseDto<CastDTO> getMovieCastPaged(int id, int page, int size) {
+        // 1. Obținem datele (din TmdbClient care are @Cacheable)
+        CreditsDTO<CastDTO, CrewDTO> allCredits = getMovieCastAndCrew(id);
 
+        if (allCredits == null || allCredits.getCast() == null) {
+            return PagedResponseDto.<CastDTO>builder().results(List.of()).build();
+        }
+
+        // 2. Extragem, SORTĂM și PROCESĂM URL-urile
+        List<CastDTO> fullCast = allCredits.getCast().stream()
+                .sorted(Comparator.comparingInt(CastDTO::getOrder))
+                .map(cast -> {
+                    cast.setProfilePath(MediaMapper.buildTmdbImageUrl(cast.getProfilePath(), "w500"));
+                    return cast;
+                })
+                .collect(Collectors.toList());
+
+        int totalResults = fullCast.size();
+        int totalPages = (int) Math.ceil((double) totalResults / size);
+
+        int start = Math.min(page * size, totalResults);
+        int end = Math.min(start + size, totalResults);
+
+        List<CastDTO> pagedResults = fullCast.subList(start, end);
+
+        return PagedResponseDto.<CastDTO>builder()
+                .page(page)
+                .results(pagedResults)
+                .totalPages(totalPages)
+                .build();
+    }
     // test
 
 

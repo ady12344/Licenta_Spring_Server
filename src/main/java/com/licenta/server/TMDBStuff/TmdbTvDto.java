@@ -1,6 +1,9 @@
 package com.licenta.server.TMDBStuff;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.licenta.server.dto.CreditsDTO;
+import com.licenta.server.dto.TvCastDTO;
+import com.licenta.server.dto.TvCrewDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -36,5 +39,5 @@ public class TmdbTvDto {
 
     private List<TmdbGenreDto> genres;
     @JsonProperty("aggregate_credits")
-    private TvCreditsDTO credits;
+    private CreditsDTO<TvCastDTO, TvCrewDTO> credits;
 }

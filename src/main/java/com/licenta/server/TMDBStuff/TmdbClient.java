@@ -1,5 +1,6 @@
 package com.licenta.server.TMDBStuff;
 
+import com.licenta.server.dto.*;
 import com.licenta.server.exception.TmdbNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,17 +32,17 @@ public class TmdbClient {
                 .bodyToMono(TmdbMovieDto.class).block();
     }
     @Cacheable(value = "cast" , key = "#id")
-    public CreditsDTO getMovieCastAndCrew(int id){
+    public CreditsDTO<CastDTO , CrewDTO> getMovieCastAndCrew(int id){
         return webClient.get().uri(uriBuilder ->
                         uriBuilder.path("/movie/" + id + "/credits")
                                 .queryParam("language", "en-US")
                                 .build())
                 .retrieve()
-                .onStatus(status -> status == HttpStatus.NOT_FOUND, response -> Mono.error(new TmdbNotFoundException("Movie show not found in TMDB")))
+                .onStatus(status -> status == HttpStatus.NOT_FOUND, response -> Mono.error(new TmdbNotFoundException("Movie not found in TMDB")))
                 .onStatus(HttpStatusCode::is4xxClientError , response ->
                         Mono.error(new RuntimeException("Tmdb Client Error")))
                 .onStatus(HttpStatusCode::is5xxServerError , response -> Mono.error(new RuntimeException("Tmdb Server Error")))
-                .bodyToMono(CreditsDTO.class).block();
+                .bodyToMono(new ParameterizedTypeReference<CreditsDTO<CastDTO, CrewDTO>>() {}).block();
     }
     public TmdbPagedResponse<TmdbMovieCardDto> searchMovieByTitle(int page, String query) {
         return webClient.get().uri(uriBuilder ->
@@ -119,6 +120,19 @@ public class TmdbClient {
                 uriBuilder.path("/tv/on_the_air")
                         .queryParam("language" , "en-US")
                         .queryParam("page", page).build()).retrieve().bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbTvCardDto>>() {}).block();
+    }
+    @Cacheable(value = "tv_cast", key = "#id")
+    public CreditsDTO<TvCastDTO , TvCrewDTO> getTvShowCastAndCrew(int id){
+        return webClient.get().uri(uriBuilder ->
+                        uriBuilder.path("/tv/" + id + "/aggregate_credits")
+                                .queryParam("language", "en-US")
+                                .build())
+                .retrieve()
+                .onStatus(status -> status == HttpStatus.NOT_FOUND, response -> Mono.error(new TmdbNotFoundException("Tv show not found in TMDB")))
+                .onStatus(HttpStatusCode::is4xxClientError , response ->
+                        Mono.error(new RuntimeException("Tmdb Client Error")))
+                .onStatus(HttpStatusCode::is5xxServerError , response -> Mono.error(new RuntimeException("Tmdb Server Error")))
+                .bodyToMono(new ParameterizedTypeReference<CreditsDTO<TvCastDTO, TvCrewDTO>>() {}).block();
     }
 
     //===========//

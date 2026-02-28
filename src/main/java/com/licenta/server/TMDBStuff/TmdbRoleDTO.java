@@ -9,7 +9,4 @@ import lombok.Setter;
 public class TmdbRoleDTO {
     @JsonProperty("character")
     private String character;
-
-    @JsonProperty("episode_count")
-    private int episodeCount;
 }

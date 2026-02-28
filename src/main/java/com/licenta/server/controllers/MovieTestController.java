@@ -1,6 +1,6 @@
 package com.licenta.server.controllers;
 
-import com.licenta.server.TMDBStuff.CastDTO;
+import com.licenta.server.dto.CastDTO;
 import com.licenta.server.TMDBStuff.TmdbClient;
 import com.licenta.server.TMDBStuff.TmdbMovieDto;
 import com.licenta.server.dto.MovieCardDto;

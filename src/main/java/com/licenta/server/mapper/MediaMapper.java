@@ -3,10 +3,22 @@ package com.licenta.server.mapper;
 import com.licenta.server.TMDBStuff.*;
 import com.licenta.server.dto.*;
 import com.licenta.server.models.Media;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MediaMapper {
+
+    public static String buildTmdbImageUrl(String path, String size) {
+        if (path == null || path.isEmpty()) {
+            // Poți returna un URL de placeholder sau null,
+            // depinde cum gestionezi în Front-End
+            return null;
+        }
+        // Dimensiuni standard: "w200", "w500", "original"
+        return "https://image.tmdb.org/t/p/" + size + path;
+    }
     //Movies
     public static MovieDto mapMediaToMovieDto(Media media){
         return MovieDto.builder()
@@ -30,20 +42,20 @@ public class MediaMapper {
                 .overview(dto.getOverview())
                 .tmdbRating(dto.getVoteAverage())
                 .releaseDate(dto.getReleaseDate())
-                .posterPath(dto.getPosterPath())
+                .posterPath(buildTmdbImageUrl(dto.getPosterPath(),"w500"))
                 .status(dto.getStatus())
                 .build();
     }
     public static MovieCardDto mapToMovieCard(TmdbMovieCardDto movieCardDto){
         return MovieCardDto.builder()
                 .title(movieCardDto.getTitle())
-                .posterPath(movieCardDto.getPosterPath())
+                .posterPath(buildTmdbImageUrl(movieCardDto.getPosterPath(), "w500"))
                 .tmdbId(movieCardDto.getTmdbId()).build();
     }
 
 
 
-    public static MovieDto newMapToMovieDto(TmdbMovieDto apiResponse) {
+   /* public static MovieDto newMapToMovieDto(TmdbMovieDto apiResponse) {
         // 2. Extragere Top Cast (primii 10)
         List<CastDTO> topCast = apiResponse.getCredits().getCast().stream()
                 .limit(10)
@@ -72,9 +84,62 @@ public class MediaMapper {
                 .topCast(topCast)
                 .genres(genreNames)
                 .build();
-    }
+    }*/
+   public static MovieDto newMapToMovieDto(TmdbMovieDto apiResponse) {
+       // 1. Verificare de siguranță pentru obiectul principal
+       if (apiResponse == null) {
+           return MovieDto.builder().build();
+       }
 
+       // 2. Extragere Credits cu tipuri generice explicite pentru a evita eroarea "Object"
+       // Această linie îi spune Javei exact ce tipuri de date sunt în liste
+       CreditsDTO<CastDTO, CrewDTO> credits = apiResponse.getCredits();
 
+       // 3. Procesare Cast (Actori)
+       List<CastDTO> topCast = (credits != null && credits.getCast() != null)
+               ? credits.getCast().stream()
+               .limit(10)
+               .map(cast -> {
+                   // Actualizăm URL-ul imaginii folosind metoda statică
+                   cast.setProfilePath(buildTmdbImageUrl(cast.getProfilePath(), "w200"));
+                   return cast;
+               })
+               .collect(Collectors.toList())
+               : List.of();
+
+       // 4. Extragere Regizor (Director)
+       String directorName = (credits != null && credits.getCrew() != null)
+               ? credits.getCrew().stream()
+               // Java știe acum că elementul este CrewDTO, deci găsește getJob()
+               .filter(crew -> "Director".equals(crew.getJob()))
+               .map(BaseCrewDTO::getName)
+               .findFirst()
+               .orElse("Unknown Director")
+               : "Unknown Director";
+
+       // 5. Extragere Genuri
+       List<String> genreNames = (apiResponse.getGenres() != null)
+               ? apiResponse.getGenres().stream()
+               .map(TmdbGenreDto::getName)
+               .toList()
+               : List.of();
+
+       // 6. Construcția obiectului final MovieDto
+       return MovieDto.builder()
+               .tmdbId(apiResponse.getId())
+               .title(apiResponse.getTitle())
+               .overview(apiResponse.getOverview())
+               // Utilizăm metoda statică buildTmdbImageUrl pentru restul imaginilor
+               .posterPath(buildTmdbImageUrl(apiResponse.getPosterPath(), "w500"))
+               .backdropPath(buildTmdbImageUrl(apiResponse.getBackdropPath(), "original"))
+               .releaseDate(apiResponse.getReleaseDate())
+               .tmdbRating(apiResponse.getVoteAverage())
+               .status(apiResponse.getStatus())
+               .directorName(directorName)
+               .topCast(topCast)
+               .genres(genreNames)
+               .build();
+   }
     //Tv Shows
     public static TvDto mapMediaToTvDto(Media media){
         return TvDto.builder()
@@ -83,7 +148,7 @@ public class MediaMapper {
                 .firstAirDate(media.getFirstAirDate() == null ? null : media.getFirstAirDate().toString())
                 .status(media.getStatus())
                 .numberOfSeasons(media.getNumberOfSeasons())
-                .voteAverage(media.getVoteAverage())
+                .tmdbRating(media.getVoteAverage())
                 .genres(media.getGenres())
                 .backdropPath(media.getBackdropPath())
                 .posterPath(media.getPosterPath())
@@ -91,9 +156,22 @@ public class MediaMapper {
                 .build();
     }
 
-    public static TvDto mapTmdbToTvDto(TmdbTvDto dto){
+   /* public static TvDto mapTmdbToTvDto(TmdbTvDto dto){
+        // 1. Procesăm lista de cast pentru a curăța rolurile
         List<TvCastDTO> topCast = dto.getCredits().getCast().stream()
-                .limit(10)
+                .map(castMember -> {
+                    // Filtrăm lista de roluri a fiecărui actor
+                    if (castMember.getRoles() != null) {
+                        List<TmdbRoleDTO> cleanedRoles = castMember.getRoles().stream()
+                                .filter(role -> role.getCharacter() != null && !role.getCharacter().trim().isEmpty())
+                                .toList();
+                        castMember.setRoles(cleanedRoles);
+                    }
+                    return castMember;
+                })
+                // 2. Opțional: Eliminăm actorii care după filtrare nu mai au niciun rol listat
+                .filter(castMember -> castMember.getRoles() != null && !castMember.getRoles().isEmpty())
+                .limit(10) // Păstrăm primii 10 după curățare
                 .toList();
 
         return TvDto.builder()
@@ -115,12 +193,66 @@ public class MediaMapper {
                 .topCast(topCast)
                 .posterPath(dto.getPosterPath())
                 .build();
-    }
+    }*/
+   public static TvDto mapTmdbToTvDto(TmdbTvDto apiResponse) {
+       // 1. Verificare de siguranță
+       if (apiResponse == null) {
+           return TvDto.builder().build();
+       }
+
+       // 2. Extragere Credits (folosind tipurile TV specifice)
+       CreditsDTO<TvCastDTO, TvCrewDTO> credits = apiResponse.getCredits();
+
+       // 3. Procesare Cast (Actori) - limitat la 10 și formatare URL
+       List<TvCastDTO> topCast = (credits != null && credits.getCast() != null)
+               ? credits.getCast().stream()
+               .limit(10)
+               .map(cast -> {
+                   // Actualizăm calea imaginii folosind metoda existentă
+                   cast.setProfilePath(buildTmdbImageUrl(cast.getProfilePath(), "w200"));
+                   return cast;
+               })
+               .collect(Collectors.toList())
+               : List.of();
+
+       // 4. Extragere Regizor (Director) - logică specifică listei de job-uri TV
+       String directorName = (credits != null && credits.getCrew() != null)
+               ? credits.getCrew().stream()
+               .filter(crew -> crew.getJobs() != null && crew.getJobs().stream()
+                       .anyMatch(job -> "Director".equals(job.getJob())))
+               .map(BaseCrewDTO::getName)
+               .findFirst()
+               .orElse("Unknown Director")
+               : "Unknown Director";
+
+       // 5. Extragere Genuri
+       List<String> genreNames = (apiResponse.getGenres() != null)
+               ? apiResponse.getGenres().stream()
+               .map(TmdbGenreDto::getName)
+               .toList()
+               : List.of();
+
+       // 6. Construcția obiectului final TvDto similar cu MovieDto
+       return TvDto.builder()
+               .tmdbId(apiResponse.getId())
+               .title(apiResponse.getName())
+               .overview(apiResponse.getOverview())
+               .posterPath(buildTmdbImageUrl(apiResponse.getPosterPath(), "w500"))
+               .backdropPath(buildTmdbImageUrl(apiResponse.getBackdropPath(), "original"))
+               .firstAirDate(apiResponse.getFirstAirDate())
+               .tmdbRating(apiResponse.getVoteAverage())
+               .status(apiResponse.getStatus())
+               .numberOfSeasons(apiResponse.getNumberOfSeasons())
+               .directorName(directorName)
+               .topCast(topCast)
+               .genres(genreNames)
+               .build();
+   }
     public static TvCardDto mapTmdbToTvCard(TmdbTvCardDto dto){
         return TvCardDto.builder()
                 .tmdbTvId(dto.getTmdbTvId())
                 .title(dto.getName())
-                .posterPath(dto.getPosterPath())
+                .posterPath(buildTmdbImageUrl(dto.getPosterPath(), "w500"))
                 .build();
     }
 

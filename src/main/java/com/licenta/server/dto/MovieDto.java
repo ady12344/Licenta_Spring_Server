@@ -1,7 +1,5 @@
 package com.licenta.server.dto;
 
-import com.licenta.server.TMDBStuff.CastDTO;
-import com.licenta.server.models.MediaType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
