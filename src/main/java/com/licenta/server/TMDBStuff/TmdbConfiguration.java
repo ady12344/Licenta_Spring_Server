@@ -12,7 +12,9 @@ public class TmdbConfiguration {
     private String apiKey;
     @Bean
     public WebClient webClient() {
-        return WebClient.builder().baseUrl("https://api.themoviedb.org/3/")
+        return WebClient.builder()
+                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16* 1024 * 1024))
+                .baseUrl("https://api.themoviedb.org/3/")
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE , "application/json;charset=UTF-8").build();
 

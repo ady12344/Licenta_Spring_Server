@@ -1,13 +1,11 @@
 package com.licenta.server.controllers;
 
 import com.licenta.server.TMDBStuff.TmdbTvDto;
-import com.licenta.server.dto.PagedResponseDto;
-import com.licenta.server.dto.SeasonCardDto;
-import com.licenta.server.dto.TvCardDto;
-import com.licenta.server.dto.TvDto;
+import com.licenta.server.dto.*;
 import com.licenta.server.services.MediaService;
 import com.licenta.server.services.TelevisionService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +21,20 @@ public class TvTestControllers {
     @GetMapping("/tmdb/{id}")
     public ResponseEntity<TmdbTvDto> fetchTvShowTmdb(@PathVariable int id) {
         return ResponseEntity.ok(tvService.fetchTvShowTmdb(id));
+    }
+    @GetMapping("/getSimilarShows")
+    //Im gonna kms
+    public ResponseEntity<PagedResponseDto<TvCardDto>> seeSimilarShows(@RequestParam int id, @RequestParam int page){
+        return ResponseEntity.ok(tvService.seeSimilarShows(id,page));
+    }
+    @GetMapping("/getRecommendedShows")
+    public ResponseEntity<PagedResponseDto<TvCardDto>> seeRecommendedShows(@RequestParam int id, @RequestParam int page){
+        return ResponseEntity.ok(tvService.seeRecommendedShows(id,page));
+    }
+    //nope im fine
+    @GetMapping("/getCastTV")
+    public ResponseEntity<PagedResponseDto<TvCastDTO>> getCastTV(@RequestParam int id , @RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(tvService.getTvShowCastPaged(id, page,size));
     }
 
     // Cached/DB-first + fallback to TMDB mapped to TvDto

@@ -40,4 +40,8 @@ public class TmdbTvDto {
     private List<TmdbGenreDto> genres;
     @JsonProperty("aggregate_credits")
     private CreditsDTO<TvCastDTO, TvCrewDTO> credits;
+    @JsonProperty("similar")
+    private TmdbPagedResponse<TmdbTvCardDto> similar;
+    @JsonProperty("recommendations")
+    private TmdbPagedResponse<TmdbTvCardDto> recommendations;
 }

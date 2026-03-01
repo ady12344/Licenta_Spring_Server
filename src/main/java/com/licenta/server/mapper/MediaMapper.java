@@ -123,7 +123,6 @@ public class MediaMapper {
                .map(TmdbGenreDto::getName)
                .toList()
                : List.of();
-
        // 6. Construcția obiectului final MovieDto
        return MovieDto.builder()
                .tmdbId(apiResponse.getId())
@@ -138,6 +137,8 @@ public class MediaMapper {
                .directorName(directorName)
                .topCast(topCast)
                .genres(genreNames)
+               .similarMovies(apiResponse.getSimilar().getResults().stream().map(MediaMapper::mapToMovieCard).limit(5).collect(Collectors.toList()))
+               .recommendedMovies(apiResponse.getRecommendations().getResults().stream().map(MediaMapper::mapToMovieCard).limit(5).collect(Collectors.toList()))
                .build();
    }
     //Tv Shows
@@ -246,6 +247,8 @@ public class MediaMapper {
                .directorName(directorName)
                .topCast(topCast)
                .genres(genreNames)
+               .similarShows(apiResponse.getSimilar().getResults().stream().map(MediaMapper::mapTmdbToTvCard).limit(5).collect(Collectors.toList()))
+               .recommendations(apiResponse.getRecommendations().getResults().stream().map(MediaMapper::mapTmdbToTvCard).limit(5).collect(Collectors.toList()))
                .build();
    }
     public static TvCardDto mapTmdbToTvCard(TmdbTvCardDto dto){

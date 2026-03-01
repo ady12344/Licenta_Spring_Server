@@ -22,7 +22,7 @@ public class TmdbClient {
         return webClient.get().uri(uriBuilder ->
                             uriBuilder.path("/movie/" + id)
                                     .queryParam("language", "en-US")
-                                    .queryParam("append_to_response", "credits")
+                                    .queryParam("append_to_response", "credits,similar,recommendations")
                                     .build())
                     .retrieve()
                 .onStatus(status -> status == HttpStatus.NOT_FOUND, response -> Mono.error(new TmdbNotFoundException("Movie show not found in TMDB")))
@@ -30,6 +30,20 @@ public class TmdbClient {
                         Mono.error(new RuntimeException("Tmdb Client Error")))
                 .onStatus(HttpStatusCode::is5xxServerError , response -> Mono.error(new RuntimeException("Tmdb Server Error")))
                 .bodyToMono(TmdbMovieDto.class).block();
+    }
+    public TmdbPagedResponse<TmdbMovieCardDto> getSimilarMovies(int id , int page){
+        return webClient.get().uri(uriBuilder ->
+                uriBuilder.path("/movie/" + id + "/similar")
+                        .queryParam("language", "en-US")
+                        .queryParam("page", page)
+                        .build()).retrieve().bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbMovieCardDto>>() {}).block();
+    }
+    public TmdbPagedResponse<TmdbMovieCardDto> getRecommendedMovies(int id , int page){
+        return webClient.get().uri(uriBuilder ->
+                uriBuilder.path("/movie/" + id + "/recommendations")
+                        .queryParam("language", "en-US")
+                        .queryParam("page", page)
+                        .build()).retrieve().bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbMovieCardDto>>() {}).block();
     }
     @Cacheable(value = "cast" , key = "#id")
     public CreditsDTO<CastDTO , CrewDTO> getMovieCastAndCrew(int id){
@@ -80,7 +94,7 @@ public class TmdbClient {
         return webClient.get().uri(uriBuilder ->
                         uriBuilder.path("/tv/" + id)
                                 .queryParam("language" , "en-US")
-                                .queryParam("append_to_response", "aggregate_credits")
+                                .queryParam("append_to_response", "aggregate_credits,similar,recommendations")
                                 .build()).retrieve()
                 .onStatus(status -> status == HttpStatus.NOT_FOUND, response -> Mono.error(new TmdbNotFoundException("TV show not found in TMDB")))
                 .onStatus( HttpStatusCode::is4xxClientError,
@@ -92,6 +106,21 @@ public class TmdbClient {
                                 new RuntimeException("TMDB server error")
                         )
                 ).bodyToMono(TmdbTvDto.class).block();
+    }
+
+    public TmdbPagedResponse<TmdbTvCardDto> getSimilarTvShows(int id , int page){
+        return webClient.get().uri(uriBuilder ->
+                uriBuilder.path("/tv/" + id + "/similar")
+                        .queryParam("language" , "en-US")
+                        .queryParam("page" , page)
+                        .build()).retrieve().bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbTvCardDto>>() {}).block();
+    }
+    public TmdbPagedResponse<TmdbTvCardDto> getRecomendedTvShows(int id , int page){
+        return webClient.get().uri(uriBuilder ->
+                uriBuilder.path("/tv/" + id + "/recommendations")
+                        .queryParam("language" , "en-US")
+                        .queryParam("page" , page)
+                        .build()).retrieve().bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbTvCardDto>>() {}).block();
     }
 
     public TmdbPagedResponse<TmdbTvCardDto> searchTvByTitle(String query , int page){

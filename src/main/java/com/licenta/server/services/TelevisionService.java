@@ -32,6 +32,13 @@ public class TelevisionService {
         );
     }
 
+    public PagedResponseDto<TvCardDto> seeSimilarShows(int id, int page){
+        return mapToPagedResponse(tmdbClient.getSimilarTvShows(id , page));
+    }
+    public PagedResponseDto<TvCardDto> seeRecommendedShows(int id, int page){
+        return mapToPagedResponse(tmdbClient.getRecomendedTvShows(id , page));
+    }
+
     public PagedResponseDto<TvCardDto> searchTvShowByTitle(String query, int page ){
         return mapToPagedResponse(tmdbClient.searchTvByTitle(query, page));
     }

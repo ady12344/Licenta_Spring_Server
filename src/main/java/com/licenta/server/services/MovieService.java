@@ -29,6 +29,12 @@ public class MovieService {
                 safeTotalPages
         );
     }
+    public PagedResponseDto<MovieCardDto> seeRecommendedMovies(int id,int page){
+        return mapToPagedResponse(tmdbClient.getRecommendedMovies(id , page));
+    }
+    public PagedResponseDto<MovieCardDto> seeAllSimilarMovies(int id,int page){
+        return mapToPagedResponse(tmdbClient.getSimilarMovies(id , page));
+    }
 
     public PagedResponseDto<MovieCardDto> searchMovieByTitle(int page , String query){
         return mapToPagedResponse(tmdbClient.searchMovieByTitle(page , query));

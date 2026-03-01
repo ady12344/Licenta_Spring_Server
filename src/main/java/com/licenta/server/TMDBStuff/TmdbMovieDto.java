@@ -1,9 +1,7 @@
 package com.licenta.server.TMDBStuff;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.licenta.server.dto.CastDTO;
-import com.licenta.server.dto.CreditsDTO;
-import com.licenta.server.dto.CrewDTO;
+import com.licenta.server.dto.*;
 import lombok.Data;
 
 import java.util.List;
@@ -34,6 +32,11 @@ public class TmdbMovieDto {
     private Double popularity;
     private String status;
     private List<TmdbGenreDto> genres;
+    @JsonProperty("credits")
     private CreditsDTO<CastDTO, CrewDTO> credits;
+    @JsonProperty("similar")
+    private TmdbPagedResponse<TmdbMovieCardDto> similar;
+    @JsonProperty("recommendations")
+    private TmdbPagedResponse<TmdbMovieCardDto> recommendations;
 
 }

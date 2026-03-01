@@ -8,6 +8,7 @@ import com.licenta.server.dto.MovieDto;
 import com.licenta.server.dto.PagedResponseDto;
 import com.licenta.server.services.MovieService;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,15 @@ public class MovieTestController {
         return ResponseEntity.ok(mediaService.getPopularMovies(page));
     }
 
+    @GetMapping("/getSimilarMovies")
+    public ResponseEntity<PagedResponseDto<MovieCardDto>> getSimilarMovies(@RequestParam  int id ,@RequestParam int page){
+        return ResponseEntity.ok(mediaService.seeAllSimilarMovies(id,page));
+    }
+    @GetMapping("/getRecommendedMovies")
+    public ResponseEntity<PagedResponseDto<MovieCardDto>> getRecommendedMovies(@RequestParam  int id ,@RequestParam int page){
+        return ResponseEntity.ok(mediaService.seeRecommendedMovies(id,page));
+    }
+
     // GET /api/test/movies/now-playing?page=1
     @GetMapping("/now-playing")
     public ResponseEntity<PagedResponseDto<MovieCardDto>> nowPlaying(
@@ -70,5 +80,7 @@ public class MovieTestController {
     public ResponseEntity<TmdbMovieDto> testTMDBMovie(@RequestParam  int id){
         return ResponseEntity.ok(mediaService.test(id));
     }
+
+
 
 }

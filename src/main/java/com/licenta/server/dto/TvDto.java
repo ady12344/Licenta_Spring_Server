@@ -22,4 +22,6 @@ public class TvDto {
     private List<String> genres;
     private String directorName;
     private List<TvCastDTO> topCast;
+    private List<TvCardDto> similarShows;
+    private List<TvCardDto> recommendations;
 }
