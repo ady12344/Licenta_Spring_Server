@@ -27,4 +27,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleArgument(IllegalArgumentException arg){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Argument not accepted!");
     }
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<String> handleUser(UserAlreadyExistsException ex){
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
 }
