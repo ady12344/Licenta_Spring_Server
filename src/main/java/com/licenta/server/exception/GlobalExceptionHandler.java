@@ -37,4 +37,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleItemNotFound(ItemNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(ReviewAlreadyExists.class)
+    public ResponseEntity<String> handleReviewAlreadyExists(ReviewAlreadyExists ex){
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
+    @ExceptionHandler(ReviewNotFound.class)
+    public ResponseEntity<String> handleReviewNotFound(ReviewNotFound ex){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
+    }
 }
