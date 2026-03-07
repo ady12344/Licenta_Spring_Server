@@ -2,14 +2,10 @@ package com.licenta.server.controllers;
 
 import com.licenta.server.TMDBStuff.TmdbTvDto;
 import com.licenta.server.dto.*;
-import com.licenta.server.services.MediaService;
 import com.licenta.server.services.TelevisionService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,11 +20,11 @@ public class TvTestControllers {
     }
     @GetMapping("/getSimilarShows")
     //Im gonna kms
-    public ResponseEntity<PagedResponseDto<TvCardDto>> seeSimilarShows(@RequestParam int id, @RequestParam int page){
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> seeSimilarShows(@RequestParam int id, @RequestParam int page){
         return ResponseEntity.ok(tvService.seeSimilarShows(id,page));
     }
     @GetMapping("/getRecommendedShows")
-    public ResponseEntity<PagedResponseDto<TvCardDto>> seeRecommendedShows(@RequestParam int id, @RequestParam int page){
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> seeRecommendedShows(@RequestParam int id, @RequestParam int page){
         return ResponseEntity.ok(tvService.seeRecommendedShows(id,page));
     }
     //nope im fine
@@ -47,7 +43,7 @@ public class TvTestControllers {
     // Search by title
     // GET /tv/search?query=...&page=1
     @GetMapping("/search")
-    public ResponseEntity<PagedResponseDto<TvCardDto>> searchTvShowByTitle(
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> searchTvShowByTitle(
             @RequestParam String query,
             @RequestParam(defaultValue = "1") int page
     ) {
@@ -57,7 +53,7 @@ public class TvTestControllers {
     // Popular
     // GET /tv/popular?page=1
     @GetMapping("/popular")
-    public ResponseEntity<PagedResponseDto<TvCardDto>> getPopularTvShows(
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> getPopularTvShows(
             @RequestParam(defaultValue = "1") int page
     ) {
         return ResponseEntity.ok(tvService.getPopularTvShows(page));
@@ -66,7 +62,7 @@ public class TvTestControllers {
     // Top rated
     // GET /tv/top-rated?page=1
     @GetMapping("/top-rated")
-    public ResponseEntity<PagedResponseDto<TvCardDto>> getTopRatedTvShows(
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> getTopRatedTvShows(
             @RequestParam(defaultValue = "1") int page
     ) {
         return ResponseEntity.ok(tvService.getTopRatedTvShows(page));
@@ -75,7 +71,7 @@ public class TvTestControllers {
     // On the air
     // GET /tv/on-the-air?page=1
     @GetMapping("/on-the-air")
-    public ResponseEntity<PagedResponseDto<TvCardDto>> onTheAirTvShows(
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> onTheAirTvShows(
             @RequestParam(defaultValue = "1") int page
     ) {
         return ResponseEntity.ok(tvService.onTheAirTvShows(page));

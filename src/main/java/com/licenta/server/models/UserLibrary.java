@@ -23,7 +23,8 @@ public class UserLibrary {
     private User user;
 
     private Integer tmdbId;
-    private String mediaType;
+    @Enumerated(EnumType.STRING)
+    private MediaType mediaType;
     private String title;
     private String posterPath;
 

@@ -95,28 +95,28 @@ public class MediaService {
         return mediaRepository.save(media);
     }
 
-    public PagedResponseDto<MovieCardDto> searchMovieByTitle(int page , String query){
+    public PagedResponseDto<MediaCardDTO> searchMovieByTitle(int page , String query){
         TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.searchMovieByTitle(page , query);
-        return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
+        return new PagedResponseDto<MediaCardDTO>(tmdbRes.getPage(),
                 tmdbRes.getResults().stream().map(MediaMapper::mapToMovieCard).toList() ,
                 tmdbRes.getTotalPages());
     }
 
-    public PagedResponseDto<MovieCardDto> getPopularMovies(int page){
+    public PagedResponseDto<MediaCardDTO> getPopularMovies(int page){
         TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.getPopularMovies(page);
-        return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
+        return new PagedResponseDto<MediaCardDTO>(tmdbRes.getPage(),
                 tmdbRes.getResults().stream().map(MediaMapper::mapToMovieCard).toList() ,
                 tmdbRes.getTotalPages());
     }
-    public PagedResponseDto<MovieCardDto> getNowPlayingMovies(int page){
+    public PagedResponseDto<MediaCardDTO> getNowPlayingMovies(int page){
         TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.getNowPlayingMovies(page);
-        return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
+        return new PagedResponseDto<MediaCardDTO>(tmdbRes.getPage(),
                 tmdbRes.getResults().stream().map(MediaMapper::mapToMovieCard).toList() ,
                 tmdbRes.getTotalPages());
     }
-    public PagedResponseDto<MovieCardDto> getUpcomingMovies(int page){
+    public PagedResponseDto<MediaCardDTO> getUpcomingMovies(int page){
         TmdbPagedResponse<TmdbMovieCardDto> tmdbRes = tmdbClient.getUpcomingMovies(page);
-        return new PagedResponseDto<MovieCardDto>(tmdbRes.getPage(),
+        return new PagedResponseDto<MediaCardDTO>(tmdbRes.getPage(),
                 tmdbRes.getResults().stream().map(MediaMapper::mapToMovieCard).toList() ,
                 tmdbRes.getTotalPages());
     }
@@ -127,29 +127,29 @@ public class MediaService {
 
     public TvDto getTvDetails(int id){
         return mediaRepository.findMediaByMediaTypeAndTmdbId(MediaType.TV , id)
-                .map(MediaMapper::mapMediaToTvDto).orElseGet(() -> mapper.mapTmdbToTvDto(fetchTvShowTmdb(id)));
+                .map(MediaMapper::mapMediaToTvDto).orElseGet(() -> MediaMapper.mapTmdbToTvDto(fetchTvShowTmdb(id)));
     }
-    public PagedResponseDto<TvCardDto> searchTvShowByTitle(String query, int page ){
+    public PagedResponseDto<MediaCardDTO> searchTvShowByTitle(String query, int page ){
         TmdbPagedResponse<TmdbTvCardDto> tmdbRes = tmdbClient.searchTvByTitle(query, page);
-        return new PagedResponseDto<TvCardDto>(tmdbRes.getPage(),
+        return new PagedResponseDto<MediaCardDTO>(tmdbRes.getPage(),
                 tmdbRes.getResults().stream().map(MediaMapper::mapTmdbToTvCard).toList(),
                 tmdbRes.getTotalPages());
     }
-    public PagedResponseDto<TvCardDto> getPopularTvShows(int page ){
+    public PagedResponseDto<MediaCardDTO> getPopularTvShows(int page ){
         TmdbPagedResponse<TmdbTvCardDto> tmdbRes = tmdbClient.popularTvShows(page);
-        return new PagedResponseDto<TvCardDto>(tmdbRes.getPage(),
+        return new PagedResponseDto<MediaCardDTO>(tmdbRes.getPage(),
                 tmdbRes.getResults().stream().map(MediaMapper::mapTmdbToTvCard).toList(),
                 tmdbRes.getTotalPages());
     }
-    public PagedResponseDto<TvCardDto> getTopRatedTvShows(int page ){
+    public PagedResponseDto<MediaCardDTO> getTopRatedTvShows(int page ){
         TmdbPagedResponse<TmdbTvCardDto> tmdbRes = tmdbClient.topRatedTvShow(page);
-        return new PagedResponseDto<TvCardDto>(tmdbRes.getPage(),
+        return new PagedResponseDto<MediaCardDTO>(tmdbRes.getPage(),
                 tmdbRes.getResults().stream().map(MediaMapper::mapTmdbToTvCard).toList(),
                 tmdbRes.getTotalPages());
     }
-    public PagedResponseDto<TvCardDto> onTheAirTvShows(int page ){
+    public PagedResponseDto<MediaCardDTO> onTheAirTvShows(int page ){
         TmdbPagedResponse<TmdbTvCardDto> tmdbRes = tmdbClient.onTheAir(page);
-        return new PagedResponseDto<TvCardDto>(tmdbRes.getPage(),
+        return new PagedResponseDto<MediaCardDTO>(tmdbRes.getPage(),
                 tmdbRes.getResults().stream().map(MediaMapper::mapTmdbToTvCard).toList(),
                 tmdbRes.getTotalPages());
     }

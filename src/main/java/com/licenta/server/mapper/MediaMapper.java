@@ -3,6 +3,7 @@ package com.licenta.server.mapper;
 import com.licenta.server.TMDBStuff.*;
 import com.licenta.server.dto.*;
 import com.licenta.server.models.Media;
+import com.licenta.server.models.MediaType;
 
 import java.util.Comparator;
 import java.util.List;
@@ -44,13 +45,15 @@ public class MediaMapper {
                 .releaseDate(dto.getReleaseDate())
                 .posterPath(buildTmdbImageUrl(dto.getPosterPath(),"w500"))
                 .status(dto.getStatus())
+                .mediaType(MediaType.MOVIE)
                 .build();
     }
-    public static MovieCardDto mapToMovieCard(TmdbMovieCardDto movieCardDto){
-        return MovieCardDto.builder()
+    public static MediaCardDTO mapToMovieCard(TmdbMovieCardDto movieCardDto){
+        return MediaCardDTO.builder()
                 .title(movieCardDto.getTitle())
                 .posterPath(buildTmdbImageUrl(movieCardDto.getPosterPath(), "w500"))
-                .tmdbId(movieCardDto.getTmdbId()).build();
+                .tmdbId(movieCardDto.getTmdbId())
+                .mediaType(MediaType.MOVIE).build();
     }
 
 
@@ -137,6 +140,7 @@ public class MediaMapper {
                .directorName(directorName)
                .topCast(topCast)
                .genres(genreNames)
+               .mediaType(MediaType.MOVIE)
                .similarMovies(apiResponse.getSimilar().getResults().stream().map(MediaMapper::mapToMovieCard).limit(5).collect(Collectors.toList()))
                .recommendedMovies(apiResponse.getRecommendations().getResults().stream().map(MediaMapper::mapToMovieCard).limit(5).collect(Collectors.toList()))
                .build();
@@ -247,24 +251,19 @@ public class MediaMapper {
                .directorName(directorName)
                .topCast(topCast)
                .genres(genreNames)
+               .mediaType(MediaType.TV)
                .similarShows(apiResponse.getSimilar().getResults().stream().map(MediaMapper::mapTmdbToTvCard).limit(5).collect(Collectors.toList()))
                .recommendations(apiResponse.getRecommendations().getResults().stream().map(MediaMapper::mapTmdbToTvCard).limit(5).collect(Collectors.toList()))
                .build();
    }
-    public static TvCardDto mapTmdbToTvCard(TmdbTvCardDto dto){
-        return TvCardDto.builder()
-                .tmdbTvId(dto.getTmdbTvId())
+    public static MediaCardDTO mapTmdbToTvCard(TmdbTvCardDto dto){
+        return MediaCardDTO.builder()
+                .tmdbId(dto.getTmdbTvId())
                 .title(dto.getName())
                 .posterPath(buildTmdbImageUrl(dto.getPosterPath(), "w500"))
+                .mediaType(MediaType.TV)
                 .build();
     }
 
-    public static SeasonCardDto mapTmdbSeasonCardToSeasonCardDto(TmdbSeasonCardDto dto){
-        return SeasonCardDto.builder()
-                .name(dto.getName())
-                .seasonNumber(dto.getSeasonNumber())
-                .posterPath(dto.getPosterPath())
-                .build();
-    }
 
 }

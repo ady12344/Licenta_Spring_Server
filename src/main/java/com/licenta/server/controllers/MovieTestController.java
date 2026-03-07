@@ -1,11 +1,8 @@
 package com.licenta.server.controllers;
 
-import com.licenta.server.dto.CastDTO;
+import com.licenta.server.dto.*;
 import com.licenta.server.TMDBStuff.TmdbClient;
 import com.licenta.server.TMDBStuff.TmdbMovieDto;
-import com.licenta.server.dto.MovieCardDto;
-import com.licenta.server.dto.MovieDto;
-import com.licenta.server.dto.PagedResponseDto;
 import com.licenta.server.services.MovieService;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
@@ -36,7 +33,7 @@ public class MovieTestController {
 
     // GET /api/test/movies/search?page=1&query=batman
     @GetMapping("/search")
-    public ResponseEntity<PagedResponseDto<MovieCardDto>> search(
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> search(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam String query
     ) {
@@ -45,24 +42,24 @@ public class MovieTestController {
 
     // GET /api/test/movies/popular?page=1
     @GetMapping("/popular")
-    public ResponseEntity<PagedResponseDto<MovieCardDto>> popular(
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> popular(
             @RequestParam(defaultValue = "1") int page
     ) {
         return ResponseEntity.ok(mediaService.getPopularMovies(page));
     }
 
     @GetMapping("/getSimilarMovies")
-    public ResponseEntity<PagedResponseDto<MovieCardDto>> getSimilarMovies(@RequestParam  int id ,@RequestParam int page){
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> getSimilarMovies(@RequestParam  int id ,@RequestParam int page){
         return ResponseEntity.ok(mediaService.seeAllSimilarMovies(id,page));
     }
     @GetMapping("/getRecommendedMovies")
-    public ResponseEntity<PagedResponseDto<MovieCardDto>> getRecommendedMovies(@RequestParam  int id ,@RequestParam int page){
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> getRecommendedMovies(@RequestParam  int id ,@RequestParam int page){
         return ResponseEntity.ok(mediaService.seeRecommendedMovies(id,page));
     }
 
     // GET /api/test/movies/now-playing?page=1
     @GetMapping("/now-playing")
-    public ResponseEntity<PagedResponseDto<MovieCardDto>> nowPlaying(
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> nowPlaying(
             @RequestParam(defaultValue = "1") int page
     ) {
         return ResponseEntity.ok(mediaService.getNowPlayingMovies(page));
@@ -70,7 +67,7 @@ public class MovieTestController {
 
     // GET /api/test/movies/upcoming?page=1
     @GetMapping("/upcoming")
-    public ResponseEntity<PagedResponseDto<MovieCardDto>> upcoming(
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> upcoming(
             @RequestParam(defaultValue = "1") int page
     ) {
         return ResponseEntity.ok(mediaService.getUpcomingMovies(page));

@@ -21,7 +21,7 @@ public class MovieService {
         return MediaMapper.newMapToMovieDto(fetchMovieFromTmdb(id));
 
     }
-    private PagedResponseDto<MovieCardDto> mapToPagedResponse(TmdbPagedResponse<TmdbMovieCardDto> tmdbRes) {
+    private PagedResponseDto<MediaCardDTO> mapToPagedResponse(TmdbPagedResponse<TmdbMovieCardDto> tmdbRes) {
         int safeTotalPages = Math.min(tmdbRes.getTotalPages(), TMDB_MAX_PAGE_LIMIT);
         return new PagedResponseDto<>(
                 tmdbRes.getPage(),
@@ -29,25 +29,25 @@ public class MovieService {
                 safeTotalPages
         );
     }
-    public PagedResponseDto<MovieCardDto> seeRecommendedMovies(int id,int page){
+    public PagedResponseDto<MediaCardDTO> seeRecommendedMovies(int id,int page){
         return mapToPagedResponse(tmdbClient.getRecommendedMovies(id , page));
     }
-    public PagedResponseDto<MovieCardDto> seeAllSimilarMovies(int id,int page){
+    public PagedResponseDto<MediaCardDTO> seeAllSimilarMovies(int id,int page){
         return mapToPagedResponse(tmdbClient.getSimilarMovies(id , page));
     }
 
-    public PagedResponseDto<MovieCardDto> searchMovieByTitle(int page , String query){
+    public PagedResponseDto<MediaCardDTO> searchMovieByTitle(int page , String query){
         return mapToPagedResponse(tmdbClient.searchMovieByTitle(page , query));
     }
 
-    public PagedResponseDto<MovieCardDto> getPopularMovies(int page){
+    public PagedResponseDto<MediaCardDTO> getPopularMovies(int page){
      return mapToPagedResponse(tmdbClient.getPopularMovies(page));
     }
-    public PagedResponseDto<MovieCardDto> getNowPlayingMovies(int page){
+    public PagedResponseDto<MediaCardDTO> getNowPlayingMovies(int page){
         return mapToPagedResponse(tmdbClient.getNowPlayingMovies(page));
 
     }
-    public PagedResponseDto<MovieCardDto> getUpcomingMovies(int page){
+    public PagedResponseDto<MediaCardDTO> getUpcomingMovies(int page){
         return mapToPagedResponse(tmdbClient.getUpcomingMovies(page));
     }
     //@Cacheable(value = "cast" , key = "#id")

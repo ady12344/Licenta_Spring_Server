@@ -164,26 +164,6 @@ public class TmdbClient {
                 .bodyToMono(new ParameterizedTypeReference<CreditsDTO<TvCastDTO, TvCrewDTO>>() {}).block();
     }
 
-    //===========//
-    //==Seasons==//
-    //===========//
-    public TmdbSeasonDto getSeasonDetails(int seriesId , int seasonNumber){
-        return webClient.get().uri(uriBuilder ->
-                uriBuilder.path("/tv/" + seriesId + "/season/" + seasonNumber)
-                        .queryParam("language" , "en-US")
-                        .queryParam("series_id" , seriesId)
-                        .queryParam("season_number" , seasonNumber).build()).retrieve()
-                .onStatus(status -> status == HttpStatus.NOT_FOUND , response -> Mono.error(new TmdbNotFoundException("Season not found!")))
-                .onStatus(
-                        HttpStatusCode::is4xxClientError,
-                        response -> Mono.error(
-                                new RuntimeException("TMDB client error"))
-                )
-                .onStatus(
-                        HttpStatusCode::is5xxServerError,
-                        response -> Mono.error(new RuntimeException("Tmdb Server Error!"))
-                ).bodyToMono(TmdbSeasonDto.class).block();
-    }
 
 
 }

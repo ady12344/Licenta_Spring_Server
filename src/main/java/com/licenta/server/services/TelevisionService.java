@@ -23,7 +23,7 @@ public class TelevisionService {
         return  MediaMapper.mapTmdbToTvDto(fetchTvShowTmdb(id));
     }
 
-    private PagedResponseDto<TvCardDto> mapToPagedResponse(TmdbPagedResponse<TmdbTvCardDto> tmdbRes) {
+    private PagedResponseDto<MediaCardDTO> mapToPagedResponse(TmdbPagedResponse<TmdbTvCardDto> tmdbRes) {
         int safeTotalPages = Math.min(tmdbRes.getTotalPages(), TMDB_MAX_PAGE_LIMIT);
         return new PagedResponseDto<>(
                 tmdbRes.getPage(),
@@ -32,23 +32,23 @@ public class TelevisionService {
         );
     }
 
-    public PagedResponseDto<TvCardDto> seeSimilarShows(int id, int page){
+    public PagedResponseDto<MediaCardDTO> seeSimilarShows(int id, int page){
         return mapToPagedResponse(tmdbClient.getSimilarTvShows(id , page));
     }
-    public PagedResponseDto<TvCardDto> seeRecommendedShows(int id, int page){
+    public PagedResponseDto<MediaCardDTO> seeRecommendedShows(int id, int page){
         return mapToPagedResponse(tmdbClient.getRecomendedTvShows(id , page));
     }
 
-    public PagedResponseDto<TvCardDto> searchTvShowByTitle(String query, int page ){
+    public PagedResponseDto<MediaCardDTO> searchTvShowByTitle(String query, int page ){
         return mapToPagedResponse(tmdbClient.searchTvByTitle(query, page));
     }
-    public PagedResponseDto<TvCardDto> getPopularTvShows(int page ){
+    public PagedResponseDto<MediaCardDTO> getPopularTvShows(int page ){
         return mapToPagedResponse(tmdbClient.popularTvShows(page));
     }
-    public PagedResponseDto<TvCardDto> getTopRatedTvShows(int page ){
+    public PagedResponseDto<MediaCardDTO> getTopRatedTvShows(int page ){
         return mapToPagedResponse(tmdbClient.topRatedTvShow(page));
     }
-    public PagedResponseDto<TvCardDto> onTheAirTvShows(int page ){
+    public PagedResponseDto<MediaCardDTO> onTheAirTvShows(int page ){
         return mapToPagedResponse(tmdbClient.onTheAir(page));
     }
 

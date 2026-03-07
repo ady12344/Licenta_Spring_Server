@@ -1,6 +1,7 @@
 package com.licenta.server.dto;
 
 
+import com.licenta.server.models.MediaType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class TvDto {
     private List<String> genres;
     private String directorName;
     private List<TvCastDTO> topCast;
-    private List<TvCardDto> similarShows;
-    private List<TvCardDto> recommendations;
+    private List<MediaCardDTO> similarShows;
+    private List<MediaCardDTO> recommendations;
+    private MediaType mediaType;
 }

@@ -1,6 +1,8 @@
 package com.licenta.server.dto;
 
 import com.licenta.server.TMDBStuff.TmdbGenreDto;
+import com.licenta.server.models.Media;
+import com.licenta.server.models.MediaType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,7 @@ public class MovieDto {
     private String directorName;
     private List<CastDTO> topCast;
     private List<String> genres;
-    private List<MovieCardDto> similarMovies;
-    private List<MovieCardDto> recommendedMovies;
+    private List<MediaCardDTO> similarMovies;
+    private List<MediaCardDTO> recommendedMovies;
+    private MediaType mediaType;
 }
