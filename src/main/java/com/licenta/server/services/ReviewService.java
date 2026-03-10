@@ -86,14 +86,30 @@ public class ReviewService {
                 .build();
     }
 
-    public Boolean getUserReview(String username, Integer tmdbId, MediaType mediaType) {
+    public ReviewResponseDTO getUserReview(String username, Integer tmdbId, MediaType mediaType) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found!"));
 
         return reviewRepository
                 .findByUserIdAndTmdbIdAndMediaType(user.getId(), tmdbId, mediaType)
-                .map(Review::getLiked)
-                .orElse(null); // null means user hasn't reviewed yet
+                .map(r ->
+                        ReviewResponseDTO.builder()
+                                .username(r.getUser().getUsername())
+                                .liked(r.getLiked())
+                                .content(r.getContent())
+                                .createdAt(r.getCreatedAt())
+                                .build()).orElse(null);
+    }
+
+    @Transactional
+    public void editReview(String username, ReviewRequestDTO reviewRequestDTO) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+
+        Review review = reviewRepository.findByUserIdAndTmdbIdAndMediaType(user.getId() , reviewRequestDTO.getTmdbId() , reviewRequestDTO.getMediaType())
+                .orElseThrow(()->new ReviewNotFound("Review not found!"));
+        review.setContent(reviewRequestDTO.getContent());
+        review.setLiked(reviewRequestDTO.getLiked());
     }
 
 }

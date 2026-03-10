@@ -54,10 +54,16 @@ public class ReviewController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Boolean> getUserReview(
+    public ResponseEntity<ReviewResponseDTO> getUserReview(
             @RequestParam Integer tmdbId,
             @RequestParam MediaType mediaType) {
         return ResponseEntity.ok(
                 reviewService.getUserReview(getUsername(), tmdbId, mediaType));
+    }
+
+    @PutMapping("/edit")
+    public ResponseEntity<String> edit(@RequestBody ReviewRequestDTO dto) {
+        reviewService.editReview(getUsername(), dto);
+        return ResponseEntity.ok("Review edited!");
     }
 }
