@@ -55,6 +55,9 @@ public class MovieService {
         //System.out.println("DEBUG: Se face apel real la TMDB pentru ID: " + id);
         return tmdbClient.getMovieCastAndCrew(id);
     }
+    public PagedResponseDto<MediaCardDTO> discoverMovies(String genres, int page) {
+        return mapToPagedResponse(tmdbClient.discoverMovies(genres, page));
+    }
 
     //test zone
     /*public PagedResponseDto<CastDTO> getMovieCastPaged(int id, int page, int size) {

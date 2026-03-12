@@ -51,7 +51,7 @@ public class MediaMapper {
     public static MediaCardDTO mapToMovieCard(TmdbMovieCardDto movieCardDto){
         return MediaCardDTO.builder()
                 .title(movieCardDto.getTitle())
-                .posterPath(buildTmdbImageUrl(movieCardDto.getPosterPath(), "w500"))
+                .posterPath(buildTmdbImageUrl(movieCardDto.getPosterPath(), "w185"))
                 .tmdbId(movieCardDto.getTmdbId())
                 .mediaType(MediaType.MOVIE).build();
     }
@@ -260,7 +260,7 @@ public class MediaMapper {
         return MediaCardDTO.builder()
                 .tmdbId(dto.getTmdbTvId())
                 .title(dto.getName())
-                .posterPath(buildTmdbImageUrl(dto.getPosterPath(), "w500"))
+                .posterPath(buildTmdbImageUrl(dto.getPosterPath(), "w185"))
                 .mediaType(MediaType.TV)
                 .build();
     }

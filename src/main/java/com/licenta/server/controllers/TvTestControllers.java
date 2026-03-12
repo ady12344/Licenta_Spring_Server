@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/tv")
+@RequestMapping("/api/tv")
 public class TvTestControllers {
     private final TelevisionService tvService;
     // TMDB raw details (if you want to expose it)
@@ -75,6 +75,13 @@ public class TvTestControllers {
             @RequestParam(defaultValue = "1") int page
     ) {
         return ResponseEntity.ok(tvService.onTheAirTvShows(page));
+    }
+    @GetMapping("/discover")
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> discoverTv(
+            @RequestParam(required = false) String genres,
+            @RequestParam(defaultValue = "1") int page
+    ) {
+        return ResponseEntity.ok(tvService.discoverTv(genres, page));
     }
 
 }

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 public class TmdbClient {
@@ -162,6 +164,31 @@ public class TmdbClient {
                         Mono.error(new RuntimeException("Tmdb Client Error")))
                 .onStatus(HttpStatusCode::is5xxServerError , response -> Mono.error(new RuntimeException("Tmdb Server Error")))
                 .bodyToMono(new ParameterizedTypeReference<CreditsDTO<TvCastDTO, TvCrewDTO>>() {}).block();
+    }
+
+    //For filtering
+    public TmdbPagedResponse<TmdbMovieCardDto> discoverMovies(String genres, int page) {
+        return webClient.get().uri(uriBuilder ->
+                        uriBuilder.path("/discover/movie")
+                                .queryParam("language", "en-US")
+                                .queryParam("page", page)
+                                .queryParam("sort_by", "popularity.desc")
+                                .queryParamIfPresent("with_genres", Optional.ofNullable(genres))
+                                .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbMovieCardDto>>() {}).block();
+    }
+
+    public TmdbPagedResponse<TmdbTvCardDto> discoverTv(String genres, int page) {
+        return webClient.get().uri(uriBuilder ->
+                        uriBuilder.path("/discover/tv")
+                                .queryParam("language", "en-US")
+                                .queryParam("page", page)
+                                .queryParam("sort_by", "popularity.desc")
+                                .queryParamIfPresent("with_genres", Optional.ofNullable(genres))
+                                .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbTvCardDto>>() {}).block();
     }
 
 

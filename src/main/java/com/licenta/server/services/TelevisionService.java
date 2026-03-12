@@ -55,6 +55,9 @@ public class TelevisionService {
     public CreditsDTO<TvCastDTO , TvCrewDTO> getTvShowCastAndCrew(int id){
         return tmdbClient.getTvShowCastAndCrew(id);
     }
+    public PagedResponseDto<MediaCardDTO> discoverTv(String genres, int page) {
+        return mapToPagedResponse(tmdbClient.discoverTv(genres, page));
+    }
 
     public PagedResponseDto<TvCastDTO> getTvShowCastPaged(int id, int page, int size) {
         // 1. Obținem toate datele de la TMDB (folosind metoda deja existentă în service)

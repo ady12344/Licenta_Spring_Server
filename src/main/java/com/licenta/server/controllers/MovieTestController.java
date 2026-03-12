@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/api/movie")
 public class MovieTestController {
     private final TmdbClient tmdbClient;
     private final MovieService mediaService;
@@ -77,7 +78,13 @@ public class MovieTestController {
     public ResponseEntity<TmdbMovieDto> testTMDBMovie(@RequestParam  int id){
         return ResponseEntity.ok(mediaService.test(id));
     }
-
+    @GetMapping("/discover")
+    public ResponseEntity<PagedResponseDto<MediaCardDTO>> discoverMovies(
+            @RequestParam(required = false) String genres,
+            @RequestParam(defaultValue = "1") int page
+    ) {
+        return ResponseEntity.ok(mediaService.discoverMovies(genres, page));
+    }
 
 
 }
