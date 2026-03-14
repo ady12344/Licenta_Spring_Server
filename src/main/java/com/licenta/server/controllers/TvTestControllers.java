@@ -40,16 +40,6 @@ public class TvTestControllers {
         return ResponseEntity.ok(tvService.getTvDetails(id));
     }
 
-    // Search by title
-    // GET /tv/search?query=...&page=1
-    @GetMapping("/search")
-    public ResponseEntity<PagedResponseDto<MediaCardDTO>> searchTvShowByTitle(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "1") int page
-    ) {
-        return ResponseEntity.ok(tvService.searchTvShowByTitle(query, page));
-    }
-
     // Popular
     // GET /tv/popular?page=1
     @GetMapping("/popular")
@@ -76,12 +66,6 @@ public class TvTestControllers {
     ) {
         return ResponseEntity.ok(tvService.onTheAirTvShows(page));
     }
-    @GetMapping("/discover")
-    public ResponseEntity<PagedResponseDto<MediaCardDTO>> discoverTv(
-            @RequestParam(required = false) String genres,
-            @RequestParam(defaultValue = "1") int page
-    ) {
-        return ResponseEntity.ok(tvService.discoverTv(genres, page));
-    }
+
 
 }

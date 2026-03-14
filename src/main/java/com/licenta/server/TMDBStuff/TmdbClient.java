@@ -166,27 +166,46 @@ public class TmdbClient {
                 .bodyToMono(new ParameterizedTypeReference<CreditsDTO<TvCastDTO, TvCrewDTO>>() {}).block();
     }
 
-    //For filtering
-    public TmdbPagedResponse<TmdbMovieCardDto> discoverMovies(String genres, int page) {
+
+    // Multi search — movies + tv mixed by relevance
+    public TmdbPagedResponse<TmdbMultiCardDTO> searchMulti(String query, int page) {
         return webClient.get().uri(uriBuilder ->
-                        uriBuilder.path("/discover/movie")
+                        uriBuilder.path("/search/multi")
                                 .queryParam("language", "en-US")
+                                .queryParam("query", query)
                                 .queryParam("page", page)
-                                .queryParam("sort_by", "popularity.desc")
-                                .queryParamIfPresent("with_genres", Optional.ofNullable(genres))
+                                .queryParam("include_adult", false)
                                 .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbMultiCardDTO>>() {}).block();
+    }
+
+    // Discover movies with optional genre filter
+    public TmdbPagedResponse<TmdbMovieCardDto> discoverMovies(String genres, int page) {
+        return webClient.get().uri(uriBuilder -> {
+                    var builder = uriBuilder.path("/discover/movie")
+                            .queryParam("language", "en-US")
+                            .queryParam("page", page)
+                            .queryParam("sort_by", "popularity.desc");
+                    if (genres != null && !genres.isEmpty())
+                        builder = builder.queryParam("with_genres", genres);
+                    return builder.build();
+                })
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbMovieCardDto>>() {}).block();
     }
 
+    // Discover tv with optional genre filter
     public TmdbPagedResponse<TmdbTvCardDto> discoverTv(String genres, int page) {
-        return webClient.get().uri(uriBuilder ->
-                        uriBuilder.path("/discover/tv")
-                                .queryParam("language", "en-US")
-                                .queryParam("page", page)
-                                .queryParam("sort_by", "popularity.desc")
-                                .queryParamIfPresent("with_genres", Optional.ofNullable(genres))
-                                .build())
+        return webClient.get().uri(uriBuilder -> {
+                    var builder = uriBuilder.path("/discover/tv")
+                            .queryParam("language", "en-US")
+                            .queryParam("page", page)
+                            .queryParam("sort_by", "popularity.desc");
+                    if (genres != null && !genres.isEmpty())
+                        builder = builder.queryParam("with_genres", genres);
+                    return builder.build();
+                })
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<TmdbPagedResponse<TmdbTvCardDto>>() {}).block();
     }

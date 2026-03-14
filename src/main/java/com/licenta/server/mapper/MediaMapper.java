@@ -53,7 +53,9 @@ public class MediaMapper {
                 .title(movieCardDto.getTitle())
                 .posterPath(buildTmdbImageUrl(movieCardDto.getPosterPath(), "w185"))
                 .tmdbId(movieCardDto.getTmdbId())
-                .mediaType(MediaType.MOVIE).build();
+                .mediaType(MediaType.MOVIE)
+                .build();
+
     }
 
 
@@ -103,8 +105,7 @@ public class MediaMapper {
                ? credits.getCast().stream()
                .limit(10)
                .map(cast -> {
-                   // Actualizăm URL-ul imaginii folosind metoda statică
-                   cast.setProfilePath(buildTmdbImageUrl(cast.getProfilePath(), "w200"));
+                   cast.setProfilePath(buildTmdbImageUrl(cast.getProfilePath(), "w185"));
                    return cast;
                })
                .collect(Collectors.toList())
@@ -262,6 +263,21 @@ public class MediaMapper {
                 .title(dto.getName())
                 .posterPath(buildTmdbImageUrl(dto.getPosterPath(), "w185"))
                 .mediaType(MediaType.TV)
+                .build();
+    }
+
+    public static MediaCardDTO mapMultiCardToDTO(TmdbMultiCardDTO dto) {
+        if (dto.getMediaType() == null) return null;
+        if (!dto.getMediaType().equals("movie") && !dto.getMediaType().equals("tv")) return null;
+
+        String title = dto.getMediaType().equals("movie") ? dto.getTitle() : dto.getName();
+        MediaType mediaType = dto.getMediaType().equals("movie") ? MediaType.MOVIE : MediaType.TV;
+
+        return MediaCardDTO.builder()
+                .tmdbId(dto.getId())
+                .title(title)
+                .posterPath(buildTmdbImageUrl(dto.getPosterPath(), "w185"))
+                .mediaType(mediaType)
                 .build();
     }
 

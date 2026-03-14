@@ -3,6 +3,8 @@ package com.licenta.server.TMDBStuff;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class TmdbTvCardDto {
     @JsonProperty("id")

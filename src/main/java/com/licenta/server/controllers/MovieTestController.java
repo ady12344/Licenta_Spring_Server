@@ -32,14 +32,6 @@ public class MovieTestController {
         return ResponseEntity.ok(mediaService.getMovieDetails(tmdbId));
     }
 
-    // GET /api/test/movies/search?page=1&query=batman
-    @GetMapping("/search")
-    public ResponseEntity<PagedResponseDto<MediaCardDTO>> search(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam String query
-    ) {
-        return ResponseEntity.ok(mediaService.searchMovieByTitle(page, query));
-    }
 
     // GET /api/test/movies/popular?page=1
     @GetMapping("/popular")
@@ -77,13 +69,6 @@ public class MovieTestController {
     @GetMapping("/testTMDBMovie")
     public ResponseEntity<TmdbMovieDto> testTMDBMovie(@RequestParam  int id){
         return ResponseEntity.ok(mediaService.test(id));
-    }
-    @GetMapping("/discover")
-    public ResponseEntity<PagedResponseDto<MediaCardDTO>> discoverMovies(
-            @RequestParam(required = false) String genres,
-            @RequestParam(defaultValue = "1") int page
-    ) {
-        return ResponseEntity.ok(mediaService.discoverMovies(genres, page));
     }
 
 
