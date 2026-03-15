@@ -18,8 +18,9 @@ public class RefreshTokenService {
 
     @Transactional
     public RefreshToken createRefreshToken(User user) {
-        // Revoke old token if exists
+        // delete old token and flush immediately
         refreshTokenRepository.deleteByUser(user);
+        refreshTokenRepository.flush(); // ← add this
 
         RefreshToken token = RefreshToken.builder()
                 .user(user)

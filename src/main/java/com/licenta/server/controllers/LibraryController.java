@@ -8,6 +8,7 @@ import com.licenta.server.services.UserLibraryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/library")
@@ -17,7 +18,13 @@ public class LibraryController {
     private final UserLibraryService userLibraryService;
 
     private String getUsername() {
-        return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+
+        if (principal instanceof UserDetails) {
+            return ((UserDetails) principal).getUsername();
+        }
+        return (String) principal;
     }
 
     @PostMapping("/add")
