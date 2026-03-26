@@ -16,4 +16,6 @@ public interface UserLibraryRepository extends JpaRepository<UserLibrary, Long> 
     boolean existsByUserIdAndTmdbIdAndMediaType(Long userId, Integer tmdbId, MediaType mediaType);
 
     void deleteByUserIdAndTmdbIdAndMediaType(Long userId, Integer tmdbId, MediaType mediaType);
+    long countByUserId(Long userId);
+    long countByUserIdAndMediaType(Long userId, MediaType mediaType);
 }

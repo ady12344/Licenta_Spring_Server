@@ -16,4 +16,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     long countByTmdbIdAndMediaType(Integer tmdbId, MediaType mediaType);
     long countByTmdbIdAndMediaTypeAndLiked(Integer tmdbId, MediaType mediaType, Boolean liked);
     Optional<Review> findByUserIdAndTmdbIdAndMediaType(Long userId, Integer tmdbId, MediaType mediaType);
+    long countByUserId(Long userId);
+    long countByUserIdAndLiked(Long userId, Boolean liked);
 }
